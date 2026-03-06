@@ -1,0 +1,113 @@
+﻿macro_definition_begin
+    "id": "6"
+    "name": "GERENCIA_ICONE_MAQUINA"
+    "startup": "false"
+    "periodic": [ "true", "10" ]
+    "interlock": [ "false" ]
+macro_definition_end
+macro_command main()
+
+short status_maq = 0, status_prod = 0, motivo_parada_maq = 0, icone_maq = 0
+short n_maq = 0, index = 0
+short motivo_parada_0[10] = {0,0,0,0,0,0,0,0,0,0}
+short motivo_parada_1[10] = {0,0,0,0,0,0,0,0,0,0}
+short motivo_parada_2[10] = {0,0,0,0,0,0,0,0,0,0}
+short motivo_parada_3[10] = {0,0,0,0,0,0,0,0,0,0}
+short motivo_parada_4[10] = {0,0,0,0,0,0,0,0,0,0}
+short motivo_parada_5[10] = {0,0,0,0,0,0,0,0,0,0}
+short motivo_parada_6[10] = {0,0,0,0,0,0,0,0,0,0}
+short motivo_parada_7[10] = {0,0,0,0,0,0,0,0,0,0}
+short motivo_parada_8[10] = {0,0,0,0,0,0,0,0,0,0}
+short motivo_parada_9[10] = {0,0,0,0,0,0,0,0,0,0}
+short motivo_parada_10[10] = {0,0,0,0,0,0,0,0,0,0}
+short motivo_parada_11[10] = {0,0,0,0,0,0,0,0,0,0}
+short motivo_parada_12[10] = {0,0,0,0,0,0,0,0,0,0}
+short motivo_parada_13[10] = {0,0,0,0,0,0,0,0,0,0}
+short motivo_parada_14[10] = {0,0,0,0,0,0,0,0,0,0}
+short motivo_parada_15[10] = {0,0,0,0,0,0,0,0,0,0}
+short motivo_parada_16[10] = {0,0,0,0,0,0,0,0,0,0}
+short motivo_parada_17[10] = {0,0,0,0,0,0,0,0,0,0}
+short motivo_parada_20[10] = {0,0,0,0,0,0,0,0,0,0}
+short maquina_operando[10] = {0,0,0,0,0,0,0,0,0,0}
+
+GetData(motivo_parada_0[0], "Local HMI", RW_A, 60, 10)
+GetData(motivo_parada_1[0], "Local HMI", RW_A, 70, 10)
+GetData(motivo_parada_2[0], "Local HMI", RW_A, 80, 10)
+GetData(motivo_parada_3[0], "Local HMI", RW_A, 90, 10)
+GetData(motivo_parada_4[0], "Local HMI", RW_A, 100, 10)
+GetData(motivo_parada_5[0], "Local HMI", RW_A, 110, 10)
+GetData(motivo_parada_6[0], "Local HMI", RW_A, 120, 10)
+GetData(motivo_parada_7[0], "Local HMI", RW_A, 130, 10)
+GetData(motivo_parada_8[0], "Local HMI", RW_A, 140, 10)
+GetData(motivo_parada_9[0], "Local HMI", RW_A, 150, 10)
+GetData(motivo_parada_10[0], "Local HMI", RW_A, 160, 10)
+GetData(motivo_parada_11[0], "Local HMI", RW_A, 170, 10)
+GetData(motivo_parada_12[0], "Local HMI", RW_A, 180, 10)
+GetData(motivo_parada_13[0], "Local HMI", RW_A, 190, 10)
+GetData(motivo_parada_14[0], "Local HMI", RW_A, 200, 10)
+GetData(motivo_parada_15[0], "Local HMI", RW_A, 210, 10)
+GetData(motivo_parada_16[0], "Local HMI", RW_A, 220, 10)
+GetData(motivo_parada_17[0], "Local HMI", RW_A, 230, 10)
+GetData(motivo_parada_20[0], "Local HMI", RW_A, 300, 10)
+GetData(maquina_operando[0], "Local HMI", RW_A, 310, 10)
+
+for n_maq = 0 to 31
+	index = (n_maq * 500)
+	GetData(status_maq, "Local HMI", RW, 30101 + index, 1)
+	GetData(status_prod, "Local HMI", RW, 30102 + index, 1)
+	GetData(motivo_parada_maq, "Local HMI", RW, 30104 + index, 1)
+//indicação do icone de máquina trabalhando x máquina parada
+	if status_maq == 0 then
+		icone_maq = 0 //icone vermelho máquina parada 
+	    SetData(icone_maq, "Local HMI", RW, index + 287, 1)	
+	else if status_maq == 1 and  status_prod == 0 then
+		icone_maq = 1 //icone amarelo máquina operando mas não contabilizando irog
+	    SetData(icone_maq, "Local HMI", RW, index + 287, 1)	    
+	else if status_maq == 1 and  status_prod == 1 then
+		icone_maq = 2 //icone verde máquina operando
+	    SetData(icone_maq, "Local HMI", RW, index + 287, 1)	
+	    SetData(maquina_operando[0], "Local HMI", RW_A, (n_maq * 10) + 500, 10)	    		  	  
+	end if	  	   	    	
+	if status_prod == 0 and motivo_parada_maq == 0 then
+		SetData(motivo_parada_0[0], "Local HMI", RW_A, (n_maq * 10) + 500, 10)   
+	else if status_prod == 0 and motivo_parada_maq == 1 then
+		SetData(motivo_parada_1[0], "Local HMI", RW_A, (n_maq * 10) + 500, 10)
+	else if status_prod == 0 and motivo_parada_maq == 2 then		
+		SetData(motivo_parada_2[0], "Local HMI", RW_A, (n_maq * 10) + 500, 10)
+	else if status_prod == 0 and motivo_parada_maq == 3 then	
+		SetData(motivo_parada_3[0], "Local HMI", RW_A, (n_maq * 10) + 500, 10)				
+	else if status_prod == 0 and motivo_parada_maq == 4 then	
+		SetData(motivo_parada_4[0], "Local HMI", RW_A, (n_maq * 10) + 500, 10)		
+	else if status_prod == 0 and motivo_parada_maq == 5 then	
+		SetData(motivo_parada_5[0], "Local HMI", RW_A, (n_maq * 10) + 500, 10)		
+	else if status_prod == 0 and motivo_parada_maq == 6 then			
+		SetData(motivo_parada_6[0], "Local HMI", RW_A, (n_maq * 10) + 500, 10)	
+	else if status_prod == 0 and motivo_parada_maq == 7 then	    	
+		SetData(motivo_parada_7[0], "Local HMI", RW_A, (n_maq * 10) + 500, 10)		
+	else if status_prod == 0 and motivo_parada_maq == 8 then	  		
+		SetData(motivo_parada_8[0], "Local HMI", RW_A, (n_maq * 10) + 500, 10)		
+	else if status_prod == 0 and motivo_parada_maq == 9 then
+		SetData(motivo_parada_9[0], "Local HMI", RW_A, (n_maq * 10) + 500, 10)
+	else if status_prod == 0 and motivo_parada_maq == 10 then
+		SetData(motivo_parada_10[0], "Local HMI", RW_A, (n_maq * 10) + 500, 10)
+	else if status_prod == 0 and motivo_parada_maq == 11 then
+		SetData(motivo_parada_11[0], "Local HMI", RW_A, (n_maq * 10) + 500, 10)			
+	else if status_prod == 0 and motivo_parada_maq == 12 then
+		SetData(motivo_parada_12[0], "Local HMI", RW_A, (n_maq * 10) + 500, 10)		
+	else if status_prod == 0 and motivo_parada_maq == 13 then
+		SetData(motivo_parada_13[0], "Local HMI", RW_A, (n_maq * 10) + 500, 10)
+	else if status_prod == 0 and motivo_parada_maq == 14 then
+		SetData(motivo_parada_14[0], "Local HMI", RW_A, (n_maq * 10) + 500, 10)		
+	else if status_prod == 0 and motivo_parada_maq == 15 then
+		SetData(motivo_parada_15[0], "Local HMI", RW_A, (n_maq * 10) + 500, 10)				
+	else if status_prod == 0 and motivo_parada_maq == 16 then
+		SetData(motivo_parada_16[0], "Local HMI", RW_A, (n_maq * 10) + 500, 10)		
+	else if status_prod == 0 and motivo_parada_maq == 17 then 
+		SetData(motivo_parada_17[0], "Local HMI", RW_A, (n_maq * 10) + 500, 10)			
+	else if status_prod == 0 and motivo_parada_maq == 20 then 
+		SetData(motivo_parada_20[0], "Local HMI", RW_A, (n_maq * 10) + 500, 10)									
+	end if 	
+next 
+
+
+end macro_command

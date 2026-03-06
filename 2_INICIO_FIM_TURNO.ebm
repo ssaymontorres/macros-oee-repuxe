@@ -1,0 +1,195 @@
+﻿macro_definition_begin
+    "id": "2"
+    "name": "INICIO_FIM_TURNO"
+    "startup": "false"
+    "periodic": [ "true", "10" ]
+    "interlock": [ "false" ]
+macro_definition_end
+macro_command main()
+
+short sqlquery_inicio_turno = 0, sqlquery_resumo_parada_turno = 0, sqlquery_fim_turno = 0
+short n_maq_c = 0, n_maq_i = 0 
+bool pausa_inicio_turno = false, pausa_fim_turno = false
+char nome_maq[10] = {0,0,0,0,0,0,0,0,0,0}
+short aguarda_comando = 0
+short index = 0, index_1 = 0, index_2 = 0
+bool turno_1 = 0, turno_2 = 0, turno_3 = 0
+short nome_turno_1 = 1 , nome_turno_2 = 2, nome_turno_3 = 3
+bool inicia_turno = false, finaliza_turno = false
+bool inicia_t1 = 0, inicia_t2 = 0, inicia_t3 = 0
+bool finaliza_t1 = 0, finaliza_t2 = 0, finaliza_t3 = 0 
+int tempo_motivo[21] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+int tempo_total = 0, tempo_operando = 0, qtd_turno_teorico = 0, qtd_turno_pecas_boas = 0, qtd_turno_refugo = 0
+short cont_paradas[21] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+short cod_motivo = 0
+short zera_memo[106]
+
+FILL(zera_memo[0], 0, 106)
+GetData(turno_1, "Local HMI", RW_A_Bit, 50000, 1)
+GetData(inicia_t1, "Local HMI", RW_A_Bit, 50001, 1)
+GetData(finaliza_t1, "Local HMI", RW_A_Bit, 50002, 1)
+GetData(turno_2, "Local HMI", RW_A_Bit, 60000, 1)
+GetData(inicia_t2, "Local HMI", RW_A_Bit, 60001, 1)
+GetData(finaliza_t2, "Local HMI", RW_A_Bit, 60002, 1)
+GetData(turno_3, "Local HMI", RW_A_Bit, 70000, 1)
+GetData(inicia_t3, "Local HMI", RW_A_Bit, 70001, 1)
+GetData(finaliza_t3, "Local HMI", RW_A_Bit, 70002, 1)
+GetData(inicia_turno, "Local HMI", RW_A_Bit, 80000, 1)
+GetData(finaliza_turno, "Local HMI", RW_A_Bit, 80001, 1)
+//ATIVA TURNO
+if turno_1 == true and turno_2 == false and turno_3 == false and inicia_t1 == false then 
+	inicia_t1 = true
+	finaliza_t1 = false
+	SetData(inicia_t1, "Local HMI", RW_A_Bit, 50001, 1)
+	SetData(finaliza_t1, "Local HMI", RW_A_Bit, 50002, 1)
+	SetData(nome_turno_1, "Local HMI", RW_A, 3000, 1)
+else if turno_1 == false and inicia_t1 == true then	
+	inicia_t1 = false
+	finaliza_t1 = true
+	SetData(inicia_t1, "Local HMI", RW_A_Bit, 50001, 1)	
+	SetData(finaliza_t1, "Local HMI", RW_A_Bit, 50002, 1)
+	SetData(nome_turno_1, "Local HMI", LW, 603, 1)
+else if turno_1 == false and inicia_t1 == false then	
+	inicia_t1 = false
+	finaliza_t1 = false
+	SetData(inicia_t1, "Local HMI", RW_A_Bit, 50001, 1)	
+	SetData(finaliza_t1, "Local HMI", RW_A_Bit, 50002, 1)
+end if	
+if turno_1 == false and turno_2 == true and turno_3 == false and inicia_t2 == false then 
+	inicia_t2 = true
+	finaliza_t2 = false
+	SetData(inicia_t2, "Local HMI", RW_A_Bit, 60001, 1)
+	SetData(finaliza_t2, "Local HMI", RW_A_Bit, 60002, 1)
+	SetData(nome_turno_2, "Local HMI", RW_A, 3000, 1)
+else if turno_2 == false and inicia_t2 == true then	
+	inicia_t2 = false
+	finaliza_t2 = true
+	SetData(inicia_t2, "Local HMI", RW_A_Bit, 60001, 1)	
+	SetData(finaliza_t2, "Local HMI", RW_A_Bit, 60002, 1)
+	SetData(nome_turno_2, "Local HMI", LW, 603, 1)
+else if turno_2 == false and inicia_t2 == false then	
+	inicia_t2 = false
+	finaliza_t2 = false
+	SetData(inicia_t2, "Local HMI", RW_A_Bit, 60001, 1)	
+	SetData(finaliza_t2, "Local HMI", RW_A_Bit, 60002, 1)	
+end if
+if turno_1 == false and turno_2 == false and turno_3 == true and inicia_t3 == false then 
+	inicia_t3 = true
+	finaliza_t3 = false
+	SetData(inicia_t3, "Local HMI", RW_A_Bit, 70001, 1)
+	SetData(finaliza_t3, "Local HMI", RW_A_Bit, 70002, 1)
+	SetData(nome_turno_3, "Local HMI", RW_A, 3000, 1)
+else if turno_3 == false and inicia_t3 == true then	
+	inicia_t3 = false
+	finaliza_t3 = true
+	SetData(inicia_t3, "Local HMI", RW_A_Bit, 70001, 1)	
+	SetData(finaliza_t3, "Local HMI", RW_A_Bit, 70002, 1)
+	SetData(nome_turno_3, "Local HMI", LW, 603, 1)
+else if turno_3 == false and inicia_t3 == false then	
+	inicia_t3 = false
+	finaliza_t3 = false
+	SetData(inicia_t3, "Local HMI", RW_A_Bit, 70001, 1)	
+	SetData(finaliza_t3, "Local HMI", RW_A_Bit, 70002, 1)		
+end if
+//INICIA TURNO
+if (inicia_t1 == true or inicia_t2 == true or inicia_t3 == true) and inicia_turno == false then
+	inicia_turno = true 
+	SetData(inicia_turno, "Local HMI", RW_A_Bit, 80000, 1)
+	finaliza_turno = false
+	SetData(finaliza_turno, "Local HMI", RW_A_Bit, 80001, 1)
+	pausa_inicio_turno = true
+	SetData(pausa_inicio_turno, "Local HMI", LB, 600, 1)
+	for n_maq_i = 0 to 31
+		index = (n_maq_i * 5)
+		GetData(nome_maq[0], "Local HMI", RW_A, index + 2000, 10)
+		SetData(nome_maq[0], "Local HMI", LW, 570, 10)
+		sqlquery_inicio_turno = 1
+		SetData(sqlquery_inicio_turno, "Local HMI", LW, 500, 1)
+		while aguarda_comando < 1000
+			GetData(sqlquery_inicio_turno, "Local HMI", LW, 500, 1)
+			if sqlquery_inicio_turno == 0 then
+				aguarda_comando = 1000
+			else if sqlquery_inicio_turno == 1 then
+				DELAY(100)
+				aguarda_comando = aguarda_comando + 1
+			end if 
+		wend
+		aguarda_comando = 0
+		sqlquery_inicio_turno = 0
+	next n_maq_i
+	pausa_inicio_turno = false
+	SetData(pausa_inicio_turno, "Local HMI", LB, 600, 1)
+end if 
+//CONCLUI TURNO
+if (finaliza_t1 == true or finaliza_t2 == true or finaliza_t3 == true) and finaliza_turno == false then
+	finaliza_turno = true 
+	SetData(finaliza_turno, "Local HMI", RW_A_Bit, 80001, 1)
+	inicia_turno = false
+	SetData(inicia_turno, "Local HMI", RW_A_Bit, 80000, 1)
+	pausa_fim_turno = true
+	SetData(pausa_fim_turno, "Local HMI", LB, 601, 1)	
+	for n_maq_c = 0 to 31
+		index_1 = (n_maq_c * 5)
+		index_2 = (n_maq_c * 500)
+
+		GetData(tempo_total, "Local HMI", RW, index_2 + 100, 1)	
+		GetData(tempo_operando, "Local HMI", RW, index_2 + 102, 1)	
+		GetData(tempo_motivo[0], "Local HMI", RW, index_2 + 104, 21)
+		GetData(cont_paradas[1], "Local HMI", RW, index_2 + 167, 20)		
+		GetData(qtd_turno_teorico, "Local HMI", RW, index_2 + 195, 1)
+		GetData(qtd_turno_pecas_boas, "Local HMI", RW, index_2 + 197, 1)		
+		GetData(qtd_turno_refugo, "Local HMI", RW, index_2 + 199, 1)
+		GetData(nome_maq[0], "Local HMI", RW_A, index_1 + 2000, 10)						
+
+		SetData(tempo_total, "Local HMI", LW, 580, 1)
+		SetData(tempo_operando, "Local HMI", LW, 582, 1)
+		SetData(qtd_turno_teorico, "Local HMI", LW, 584, 1)			
+		SetData(qtd_turno_pecas_boas, "Local HMI", LW, 586, 1)
+		SetData(qtd_turno_refugo, "Local HMI", LW, 588, 1)
+		SetData(nome_maq[0], "Local HMI", LW, 590, 10)		
+		
+//REGISTRA ACUMULADO DO TEMPO DAS PARADAS NO BD
+		for cod_motivo = 0 to 20
+			if tempo_motivo[cod_motivo] <> 0 then
+				SetData(tempo_motivo[cod_motivo], "Local HMI", LW, 604, 1)
+				SetData(cod_motivo, "Local HMI", LW, 606, 1)
+				cont_paradas[0] = 0
+				SetData(cont_paradas[cod_motivo], "Local HMI", LW, 607, 1)
+				sqlquery_resumo_parada_turno = 3
+				SetData(sqlquery_resumo_parada_turno, "Local HMI", LW, 500, 1)//comando para registro no banco via SQL do resumo da parada do turno
+				while aguarda_comando < 1000
+					GetData(sqlquery_resumo_parada_turno , "Local HMI", LW, 500, 1)
+					if sqlquery_resumo_parada_turno == 0 then
+						aguarda_comando = 1000	
+					else 
+						DELAY(100)
+						aguarda_comando = aguarda_comando + 1
+					end if 						
+				wend		
+			end if			
+			aguarda_comando = 0
+			sqlquery_resumo_parada_turno = 0		
+		next cod_motivo
+//REGISTRA O RESUMO DO TURNO NO BD		
+		sqlquery_fim_turno = 2	
+		SetData(sqlquery_fim_turno, "Local HMI", LW, 500, 1)//comando para registro no banco via SQL do resumo do turno		
+		while aguarda_comando < 1000
+			GetData(sqlquery_fim_turno, "Local HMI", LW, 500, 1)	
+			if sqlquery_fim_turno == 0 then				
+				aguarda_comando = 1000					
+			else				 
+				DELAY(100)
+				aguarda_comando = aguarda_comando + 1					
+			end if 	
+		wend
+		aguarda_comando = 0 
+		sqlquery_fim_turno = 0
+		cod_motivo = 0		
+		SetData(zera_memo[0], "Local HMI", RW, index_2 + 100, 106)
+	next n_maq_c	
+pausa_fim_turno = false
+SetData(pausa_fim_turno, "Local HMI", LB, 601, 1)
+end if 
+
+
+end macro_command

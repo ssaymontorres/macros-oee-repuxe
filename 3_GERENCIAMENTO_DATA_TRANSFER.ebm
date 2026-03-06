@@ -1,0 +1,30 @@
+﻿macro_definition_begin
+    "id": "3"
+    "name": "GERENCIAMENTO_DATA_TRANSFER"
+    "startup": "false"
+    "periodic": [ "true", "2" ]
+    "interlock": [ "false" ]
+macro_definition_end
+macro_command main()
+
+bool pausa_rede_carrega_op[38] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+bool pausa_inicio_turno = false
+bool pausa_fim_turno = false
+bool data_transfer_ativo_maq[38] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+short n_maq = 0
+
+GetData(pausa_rede_carrega_op[0], "Local HMI", LB, 0, 37)
+GetData(pausa_inicio_turno, "Local HMI", LB, 600, 1)
+GetData(pausa_fim_turno, "Local HMI", LB, 601, 1)
+
+for n_maq = 0 to 31
+	if pausa_rede_carrega_op[n_maq] == false and pausa_inicio_turno == false and pausa_fim_turno == false then
+		data_transfer_ativo_maq[n_maq] = true
+		SetData(data_transfer_ativo_maq[n_maq], "Local HMI", LB, n_maq + 500, 1)	
+	else 
+		data_transfer_ativo_maq[n_maq] = false
+		SetData(data_transfer_ativo_maq[n_maq], "Local HMI", LB, n_maq + 500, 1)
+	end if
+next
+
+end macro_command

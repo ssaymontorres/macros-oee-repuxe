@@ -1,0 +1,389 @@
+﻿macro_definition_begin
+    "id": "8"
+    "name": "OEE_Geral"
+    "startup": "false"
+    "periodic": [ "true", "50" ]
+    "interlock": [ "false" ]
+macro_definition_end
+macro_command main()
+
+float disponibilidade[32] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+float oee[32] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+
+short flag[32] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+
+float m_disponibilidade = 0
+float m_oee = 0
+
+float m_departamento_11_disponibilidade = 0
+float m_departamento_12_19_20_disponibilidade = 0
+float m_departamento_13_disponibilidade = 0
+float m_departamento_15_disponibilidade = 0
+float m_departamento_16_disponibilidade = 0
+float m_departamento_23_disponibilidade = 0
+float m_departamento_25_disponibilidade = 0
+float m_departamento_27_disponibilidade = 0
+
+float m_departamento_11_oee = 0
+float m_departamento_12_19_20_oee = 0
+float m_departamento_13_oee = 0
+float m_departamento_15_oee = 0
+float m_departamento_16_oee = 0
+float m_departamento_23_oee = 0
+float m_departamento_25_oee = 0
+float m_departamento_27_oee = 0
+
+short n_maq = 0
+short index = 0
+
+float sumA = 0
+float sumO = 0
+
+short cntAll = 0
+short cntG = 0
+
+// Leitura das 32 máquinas + flags (RW_A 10000..10031)
+for n_maq = 0 to 31
+    index = (n_maq * 500)
+
+    GetData(disponibilidade[n_maq], "Local HMI", RW, 187 + index, 1)
+    GetData(oee[n_maq], "Local HMI", RW, 193 + index, 1)
+
+    GetData(flag[n_maq], "Local HMI", RW_A, 10000 + n_maq, 1)
+next
+
+// OEE geral (média só das máquinas habilitadas)
+sumA = 0
+sumO = 0
+cntAll = 0
+
+for n_maq = 0 to 31
+    if flag[n_maq] <> 0 then
+        sumA = sumA + disponibilidade[n_maq]
+        sumO = sumO + oee[n_maq]
+        cntAll = cntAll + 1
+    end if
+next
+
+if cntAll > 0 then
+    m_disponibilidade = sumA / cntAll
+    m_oee = sumO / cntAll
+else
+    m_disponibilidade = 0
+    m_oee = 0
+end if
+
+SetData(m_disponibilidade, "Local HMI", LW, 1000, 1)
+SetData(m_oee, "Local HMI", LW, 1006, 1)
+
+// Grupo 11: máquinas [28,29]
+sumA = 0
+sumO = 0
+cntG = 0
+
+if flag[28] <> 0 then
+    sumA = sumA + disponibilidade[28]
+    sumO = sumO + oee[28]
+    cntG = cntG + 1
+end if
+
+if flag[29] <> 0 then
+    sumA = sumA + disponibilidade[29]
+    sumO = sumO + oee[29]
+    cntG = cntG + 1
+end if
+
+if cntG > 0 then
+    m_departamento_11_disponibilidade = sumA / cntG
+    m_departamento_11_oee = sumO / cntG
+else
+    m_departamento_11_disponibilidade = 0
+    m_departamento_11_oee = 0
+end if
+
+SetData(m_departamento_11_disponibilidade, "Local HMI", LW, 1010, 1)
+SetData(m_departamento_11_oee, "Local HMI", LW, 1016, 1)
+
+// Grupo 12_19_20: máquinas [30,31]
+sumA = 0
+sumO = 0
+cntG = 0
+
+if flag[30] <> 0 then
+    sumA = sumA + disponibilidade[30]
+    sumO = sumO + oee[30]
+    cntG = cntG + 1
+end if
+
+if flag[31] <> 0 then
+    sumA = sumA + disponibilidade[31]
+    sumO = sumO + oee[31]
+    cntG = cntG + 1
+end if
+
+if cntG > 0 then
+    m_departamento_12_19_20_disponibilidade = sumA / cntG
+    m_departamento_12_19_20_oee = sumO / cntG
+else
+    m_departamento_12_19_20_disponibilidade = 0
+    m_departamento_12_19_20_oee = 0
+end if
+
+SetData(m_departamento_12_19_20_disponibilidade, "Local HMI", LW, 1020, 1)
+SetData(m_departamento_12_19_20_oee, "Local HMI", LW, 1026, 1)
+
+// Grupo 13: máquinas [1,2,3,4,5,7,9,10,12,18]
+sumA = 0
+sumO = 0
+cntG = 0
+
+if flag[1] <> 0 then
+    sumA = sumA + disponibilidade[1]
+    sumO = sumO + oee[1]
+    cntG = cntG + 1
+end if
+
+if flag[2] <> 0 then
+    sumA = sumA + disponibilidade[2]
+    sumO = sumO + oee[2]
+    cntG = cntG + 1
+end if
+
+if flag[3] <> 0 then
+    sumA = sumA + disponibilidade[3]
+    sumO = sumO + oee[3]
+    cntG = cntG + 1
+end if
+
+if flag[4] <> 0 then
+    sumA = sumA + disponibilidade[4]
+    sumO = sumO + oee[4]
+    cntG = cntG + 1
+end if
+
+if flag[5] <> 0 then
+    sumA = sumA + disponibilidade[5]
+    sumO = sumO + oee[5]
+    cntG = cntG + 1
+end if
+
+if flag[7] <> 0 then
+    sumA = sumA + disponibilidade[7]
+    sumO = sumO + oee[7]
+    cntG = cntG + 1
+end if
+
+if flag[9] <> 0 then
+    sumA = sumA + disponibilidade[9]
+    sumO = sumO + oee[9]
+    cntG = cntG + 1
+end if
+
+if flag[10] <> 0 then
+    sumA = sumA + disponibilidade[10]
+    sumO = sumO + oee[10]
+    cntG = cntG + 1
+end if
+
+if flag[12] <> 0 then
+    sumA = sumA + disponibilidade[12]
+    sumO = sumO + oee[12]
+    cntG = cntG + 1
+end if
+
+if flag[18] <> 0 then
+    sumA = sumA + disponibilidade[18]
+    sumO = sumO + oee[18]
+    cntG = cntG + 1
+end if
+
+if cntG > 0 then
+    m_departamento_13_disponibilidade = sumA / cntG
+    m_departamento_13_oee = sumO / cntG
+else
+    m_departamento_13_disponibilidade = 0
+    m_departamento_13_oee = 0
+end if
+
+SetData(m_departamento_13_disponibilidade, "Local HMI", LW, 1030, 1)
+SetData(m_departamento_13_oee, "Local HMI", LW, 1036, 1)
+
+// Grupo 15: máquinas [23,24,25,27,14]
+sumA = 0
+sumO = 0
+cntG = 0
+
+if flag[23] <> 0 then
+    sumA = sumA + disponibilidade[23]
+    sumO = sumO + oee[23]
+    cntG = cntG + 1
+end if
+
+if flag[24] <> 0 then
+    sumA = sumA + disponibilidade[24]
+    sumO = sumO + oee[24]
+    cntG = cntG + 1
+end if
+
+if flag[25] <> 0 then
+    sumA = sumA + disponibilidade[25]
+    sumO = sumO + oee[25]
+    cntG = cntG + 1
+end if
+
+if flag[27] <> 0 then
+    sumA = sumA + disponibilidade[27]
+    sumO = sumO + oee[27]
+    cntG = cntG + 1
+end if
+
+if flag[14] <> 0 then
+    sumA = sumA + disponibilidade[14]
+    sumO = sumO + oee[14]
+    cntG = cntG + 1
+end if
+
+if cntG > 0 then
+    m_departamento_15_disponibilidade = sumA / cntG
+    m_departamento_15_oee = sumO / cntG
+else
+    m_departamento_15_disponibilidade = 0
+    m_departamento_15_oee = 0
+end if
+
+SetData(m_departamento_15_disponibilidade, "Local HMI", LW, 1040, 1)
+SetData(m_departamento_15_oee, "Local HMI", LW, 1046, 1)
+
+// Grupo 16: máquinas [26,22]
+sumA = 0
+sumO = 0
+cntG = 0
+
+if flag[26] <> 0 then
+    sumA = sumA + disponibilidade[26]
+    sumO = sumO + oee[26]
+    cntG = cntG + 1
+end if
+
+if flag[22] <> 0 then
+    sumA = sumA + disponibilidade[22]
+    sumO = sumO + oee[22]
+    cntG = cntG + 1
+end if
+
+if cntG > 0 then
+    m_departamento_16_disponibilidade = sumA / cntG
+    m_departamento_16_oee = sumO / cntG
+else
+    m_departamento_16_disponibilidade = 0
+    m_departamento_16_oee = 0
+end if
+
+SetData(m_departamento_16_disponibilidade, "Local HMI", LW, 1050, 1)
+SetData(m_departamento_16_oee, "Local HMI", LW, 1056, 1)
+
+// Grupo 23: máquina [6]
+if flag[6] <> 0 then
+    m_departamento_23_disponibilidade = disponibilidade[6]
+    m_departamento_23_oee = oee[6]
+else
+    m_departamento_23_disponibilidade = 0
+    m_departamento_23_oee = 0
+end if
+
+SetData(m_departamento_23_disponibilidade, "Local HMI", LW, 1060, 1)
+SetData(m_departamento_23_oee, "Local HMI", LW, 1066, 1)
+
+// Grupo 25: máquinas [8,11,13,15,17,21]
+sumA = 0
+sumO = 0
+cntG = 0
+
+if flag[8] <> 0 then
+    sumA = sumA + disponibilidade[8]
+    sumO = sumO + oee[8]
+    cntG = cntG + 1
+end if
+
+if flag[11] <> 0 then
+    sumA = sumA + disponibilidade[11]
+    sumO = sumO + oee[11]
+    cntG = cntG + 1
+end if
+
+if flag[13] <> 0 then
+    sumA = sumA + disponibilidade[13]
+    sumO = sumO + oee[13]
+    cntG = cntG + 1
+end if
+
+if flag[15] <> 0 then
+    sumA = sumA + disponibilidade[15]
+    sumO = sumO + oee[15]
+    cntG = cntG + 1
+end if
+
+if flag[17] <> 0 then
+    sumA = sumA + disponibilidade[17]
+    sumO = sumO + oee[17]
+    cntG = cntG + 1
+end if
+
+if flag[21] <> 0 then
+    sumA = sumA + disponibilidade[21]
+    sumO = sumO + oee[21]
+    cntG = cntG + 1
+end if
+
+if cntG > 0 then
+    m_departamento_25_disponibilidade = sumA / cntG
+    m_departamento_25_oee = sumO / cntG
+else
+    m_departamento_25_disponibilidade = 0
+    m_departamento_25_oee = 0
+end if
+
+SetData(m_departamento_25_disponibilidade, "Local HMI", LW, 1070, 1)
+SetData(m_departamento_25_oee, "Local HMI", LW, 1076, 1)
+
+// Grupo 27: máquinas [0,16,20,19]
+sumA = 0
+sumO = 0
+cntG = 0
+
+if flag[0] <> 0 then
+    sumA = sumA + disponibilidade[0]
+    sumO = sumO + oee[0]
+    cntG = cntG + 1
+end if
+
+if flag[16] <> 0 then
+    sumA = sumA + disponibilidade[16]
+    sumO = sumO + oee[16]
+    cntG = cntG + 1
+end if
+
+if flag[20] <> 0 then
+    sumA = sumA + disponibilidade[20]
+    sumO = sumO + oee[20]
+    cntG = cntG + 1
+end if
+
+if flag[19] <> 0 then
+    sumA = sumA + disponibilidade[19]
+    sumO = sumO + oee[19]
+    cntG = cntG + 1
+end if
+
+if cntG > 0 then
+    m_departamento_27_disponibilidade = sumA / cntG
+    m_departamento_27_oee = sumO / cntG
+else
+    m_departamento_27_disponibilidade = 0
+    m_departamento_27_oee = 0
+end if
+
+SetData(m_departamento_27_disponibilidade, "Local HMI", LW, 1080, 1)
+SetData(m_departamento_27_oee, "Local HMI", LW, 1086, 1)
+
+end macro_command

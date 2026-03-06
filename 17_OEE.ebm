@@ -1,0 +1,502 @@
+﻿macro_definition_begin
+    "id": "17"
+    "name": "OEE"
+    "startup": "false"
+    "periodic": [ "true", "10" ]
+    "interlock": [ "true", "off", "none", "LB", "602" ]
+macro_definition_end
+macro_command main()
+
+int tempo_total, tempo_total_rodando, tempo_parada
+int tempo_aguardando_apontamento, tempo_motivos_1, tempo_motivos_2, tempo_motivos_3, tempo_motivos_4, tempo_motivos_5, tempo_motivos_6, tempo_motivos_7, tempo_motivos_8, tempo_motivos_9, tempo_motivos_10, tempo_motivos_11, tempo_motivos_12, tempo_motivos_13, tempo_motivos_14, tempo_motivos_15, tempo_motivos_16, tempo_motivos_17, tempo_motivos_20   
+short porcent_aguardando_apontamento, porcent_motivos_1, porcent_motivos_2, porcent_motivos_3, porcent_motivos_4, porcent_motivos_5, porcent_motivos_6, porcent_motivos_7, porcent_motivos_8, porcent_motivos_9, porcent_motivos_10, porcent_motivos_11, porcent_motivos_12, porcent_motivos_13, porcent_motivos_14, porcent_motivos_15, porcent_motivos_16, porcent_motivos_17, porcent_motivos_20
+short qtd_paradas_1, qtd_paradas_2, qtd_paradas_3, qtd_paradas_4, qtd_paradas_5, qtd_paradas_6, qtd_paradas_7, qtd_paradas_8, qtd_paradas_9, qtd_paradas_10, qtd_paradas_11, qtd_paradas_12, qtd_paradas_13, qtd_paradas_14, qtd_paradas_15, qtd_paradas_16, qtd_paradas_17, qtd_paradas_20
+float porcent_disponibilidade, porcent_performance, porcent_qualidade, porcent_oee
+float qtd_turno_teorico, qtd_turno_pecas_boas, qtd_turno_refugo, qtd_turno_total, qtd_turno_teorico_temp, qtd_turno_teorico_dif, qtd_turno_pecas_boas_temp, qtd_turno_pecas_boas_dif, qtd_turno_refugo_temp, qtd_turno_refugo_dif
+float qtd_op_teorico, qtd_op_pecas_boas, qtd_op_refugo
+bool flag_cont_parada_1[38], flag_cont_parada_2[38], flag_cont_parada_3[38], flag_cont_parada_4[38], flag_cont_parada_5[38], flag_cont_parada_6[38], flag_cont_parada_7[38], flag_cont_parada_8[38], flag_cont_parada_9[38], flag_cont_parada_10[38], flag_cont_parada_11[38], flag_cont_parada_12[38], flag_cont_parada_13[38], flag_cont_parada_14[38], flag_cont_parada_15[38], flag_cont_parada_16[38], flag_cont_parada_17[38], flag_cont_parada_20[38]
+short status_maq, status_prd, status_ultima_parada
+float disponibilidade, performance, qualidade
+short index, n_maq = 0, cont_seg
+short inicio_parada
+
+
+//loop roda máquina por máquina
+for n_maq = 0 to 31
+
+	index = (n_maq * 500)//ajusta range de variável de cada máquina 
+
+//carregamento das variáveis para as memórias da macro em caso de falta de energia
+	GetData(tempo_total, "Local HMI", RW, index + 100, 1)
+	GetData(tempo_total_rodando, "Local HMI", RW, index + 102, 1)	
+	GetData(tempo_aguardando_apontamento, "Local HMI", RW, index + 104, 1)
+	GetData(tempo_motivos_1, "Local HMI", RW, index + 106, 1)
+	GetData(tempo_motivos_2, "Local HMI", RW, index + 108, 1)
+	GetData(tempo_motivos_3, "Local HMI", RW, index + 110, 1)
+	GetData(tempo_motivos_4, "Local HMI", RW, index + 112, 1)
+	GetData(tempo_motivos_5, "Local HMI", RW, index + 114, 1)
+	GetData(tempo_motivos_6, "Local HMI", RW, index + 116, 1)
+	GetData(tempo_motivos_7, "Local HMI", RW, index + 118, 1)
+	GetData(tempo_motivos_8, "Local HMI", RW, index + 120, 1)
+	GetData(tempo_motivos_9, "Local HMI", RW, index + 122, 1)
+	GetData(tempo_motivos_10, "Local HMI", RW, index + 124, 1)
+	GetData(tempo_motivos_11, "Local HMI", RW, index + 126, 1)
+	GetData(tempo_motivos_12, "Local HMI", RW, index + 128, 1)
+	GetData(tempo_motivos_13, "Local HMI", RW, index + 130, 1)
+	GetData(tempo_motivos_14, "Local HMI", RW, index + 132, 1)
+	GetData(tempo_motivos_15, "Local HMI", RW, index + 134, 1)
+	GetData(tempo_motivos_16, "Local HMI", RW, index + 136, 1)
+	GetData(tempo_motivos_17, "Local HMI", RW, index + 138, 1)	
+	GetData(tempo_motivos_20, "Local HMI", RW, index + 144, 1)
+
+	GetData(qtd_paradas_1, "Local HMI", RW, index + 167, 1)
+	GetData(qtd_paradas_2, "Local HMI", RW, index + 168, 1)
+	GetData(qtd_paradas_3, "Local HMI", RW, index + 169, 1)
+	GetData(qtd_paradas_4, "Local HMI", RW, index + 170, 1)
+	GetData(qtd_paradas_5, "Local HMI", RW, index + 171, 1)
+	GetData(qtd_paradas_6, "Local HMI", RW, index + 172, 1)
+	GetData(qtd_paradas_7, "Local HMI", RW, index + 173, 1)
+	GetData(qtd_paradas_8, "Local HMI", RW, index + 174, 1)
+	GetData(qtd_paradas_9, "Local HMI", RW, index + 175, 1)
+	GetData(qtd_paradas_10, "Local HMI", RW, index + 176, 1)
+	GetData(qtd_paradas_11, "Local HMI", RW, index + 177, 1)
+	GetData(qtd_paradas_12, "Local HMI", RW, index + 178, 1)
+	GetData(qtd_paradas_13, "Local HMI", RW, index + 179, 1)
+	GetData(qtd_paradas_14, "Local HMI", RW, index + 180, 1)
+	GetData(qtd_paradas_15, "Local HMI", RW, index + 181, 1)
+	GetData(qtd_paradas_16, "Local HMI", RW, index + 182, 1)	
+	GetData(qtd_paradas_17, "Local HMI", RW, index + 183, 1)
+	GetData(qtd_paradas_20, "Local HMI", RW, index + 186, 1)	
+
+	GetData(qtd_turno_teorico, "Local HMI", RW, index + 195, 1)	
+	GetData(qtd_turno_pecas_boas, "Local HMI", RW, index + 197, 1)
+	GetData(qtd_turno_refugo, "Local HMI", RW, index + 199, 1)	
+	GetData(qtd_turno_total, "Local HMI", RW, index + 201, 1)	
+	
+	GetData(inicio_parada, "Local HMI", RW, index + 286, 1)
+	GetData(qtd_turno_teorico_temp, "Local HMI", RW, index + 288, 1)	
+	GetData(qtd_turno_teorico_dif, "Local HMI", RW, index + 290, 1)	
+	GetData(qtd_turno_pecas_boas_temp, "Local HMI", RW, index + 292, 1)	
+	GetData(qtd_turno_pecas_boas_dif, "Local HMI", RW, index + 294, 1)			
+	GetData(qtd_turno_refugo_temp, "Local HMI", RW, index + 296, 1)	
+	GetData(qtd_turno_refugo_dif, "Local HMI", RW, index + 298, 1)
+	
+	GetData(cont_seg, "Local HMI", RW, index + 203, 1)
+	GetData(tempo_parada, "Local HMI", RW, index + 204, 1)
+	
+	GetData(qtd_op_teorico, "Local HMI", RW, index + 30146, 1)	
+	GetData(qtd_op_pecas_boas, "Local HMI", RW, index + 30148, 1)
+	GetData(qtd_op_refugo, "Local HMI", RW, index + 30150, 1)
+	
+	GetData(status_maq, "Local HMI", RW, index + 30101, 1)
+	GetData(status_prd, "Local HMI", RW, index + 30102, 1)
+	
+	GetData(status_ultima_parada, "Local HMI", RW, index + 30104, 1)
+
+//cálculo para totalização dos tempos e quantidade de parada
+	if status_maq == 0 and status_prd == 0 and inicio_parada == 0 then
+		inicio_parada = 1
+		SetData(inicio_parada, "Local HMI", RW, index + 286, 1)
+	end if
+		
+	if inicio_parada == 1 then
+	
+//conta o tempo total da parada
+	cont_seg = cont_seg + 1
+	SetData(cont_seg, "Local HMI", RW, index + 203, 1)
+	
+	if cont_seg >= 60 then
+	tempo_parada = tempo_parada + 1
+	cont_seg = 0	
+	SetData(cont_seg, "Local HMI", RW, index + 203, 1)
+	SetData(tempo_parada, "Local HMI", RW, index + 204, 1)
+	end if
+	
+//tempo 0 (tempo aguardando apontamento)
+		if status_ultima_parada == 0 then
+			tempo_aguardando_apontamento = tempo_aguardando_apontamento + 1
+			
+//tempo 1 (motivos definidos)	
+		else if status_ultima_parada == 1 then
+			tempo_motivos_1 = tempo_aguardando_apontamento + tempo_motivos_1 + 1
+			tempo_aguardando_apontamento = 0
+				if flag_cont_parada_1[n_maq] == false then 
+					qtd_paradas_1 = qtd_paradas_1 + 1
+					flag_cont_parada_1[n_maq] = true						
+				end if 
+		else if flag_cont_parada_1[n_maq] == true and status_ultima_parada <> 1 then
+			flag_cont_parada_1[n_maq] = false	
+							
+//tempo 2 (motivos definidos)						
+		else if status_ultima_parada == 2 then
+			tempo_motivos_2 = tempo_aguardando_apontamento + tempo_motivos_2 + 1
+			tempo_aguardando_apontamento = 0	
+				if flag_cont_parada_2[n_maq] == false then 
+					qtd_paradas_2 = qtd_paradas_2 + 1
+					flag_cont_parada_2[n_maq] = true	
+				end if 
+		else if flag_cont_parada_2[n_maq] == true and status_ultima_parada <> 2 then
+			flag_cont_parada_2[n_maq] = false	
+							
+//tempo 3 (motivos definidos)										
+		else if status_ultima_parada == 3 then
+			tempo_motivos_3 = tempo_aguardando_apontamento + tempo_motivos_3 + 1
+			tempo_aguardando_apontamento = 0
+				if flag_cont_parada_3[n_maq] == false then 
+					qtd_paradas_3 = qtd_paradas_3 + 1
+					flag_cont_parada_3[n_maq] = true
+				end if 
+		else if flag_cont_parada_3[n_maq] == true and status_ultima_parada <> 3 then
+			flag_cont_parada_3[n_maq] = false	
+							
+//tempo 4 (motivos definidos)									
+		else if status_ultima_parada == 4 then
+			tempo_motivos_4 = tempo_aguardando_apontamento + tempo_motivos_4 + 1
+			tempo_aguardando_apontamento = 0			
+				if flag_cont_parada_4[n_maq] == false then 
+					qtd_paradas_4 = qtd_paradas_4 + 1
+					flag_cont_parada_4[n_maq] = true
+				end if
+		else if flag_cont_parada_4[n_maq] == true and status_ultima_parada <> 4 then
+			flag_cont_parada_4[n_maq] = false
+								
+//tempo 5 (motivos definidos)					 			
+		else if status_ultima_parada == 5 then
+			tempo_motivos_5 = tempo_aguardando_apontamento + tempo_motivos_5 + 1
+			tempo_aguardando_apontamento = 0	
+				if flag_cont_parada_5[n_maq] == false then 
+					qtd_paradas_5 = qtd_paradas_5 + 1
+					flag_cont_parada_5[n_maq] = true
+				end if 
+		else if flag_cont_parada_5[n_maq] == true and status_ultima_parada <> 5 then
+			flag_cont_parada_5[n_maq] = false
+													
+//tempo 6 (motivos definidos)								
+		else if status_ultima_parada == 6 then
+			tempo_motivos_6 = tempo_aguardando_apontamento + tempo_motivos_6 + 1
+			tempo_aguardando_apontamento = 0	
+				if flag_cont_parada_6[n_maq] == false then 
+					qtd_paradas_6 = qtd_paradas_6 + 1
+					flag_cont_parada_6[n_maq] = true
+				end if
+		else if flag_cont_parada_6[n_maq] == true and status_ultima_parada <> 6 then
+			flag_cont_parada_6[n_maq] = false
+			
+//tempo 7 (motivos definidos)					 			
+		else if status_ultima_parada == 7 then
+			tempo_motivos_7 = tempo_aguardando_apontamento + tempo_motivos_7 + 1
+			tempo_aguardando_apontamento = 0	
+				if flag_cont_parada_7[n_maq] == false then 
+					qtd_paradas_7 = qtd_paradas_7 + 1
+					flag_cont_parada_7[n_maq] = true
+				end if 
+		else if flag_cont_parada_7[n_maq] == true and status_ultima_parada <> 7 then
+			flag_cont_parada_7[n_maq] = false
+								
+//tempo 8 (motivos definidos)								
+		else if status_ultima_parada == 8 then
+			tempo_motivos_8 = tempo_aguardando_apontamento + tempo_motivos_8 + 1
+			tempo_aguardando_apontamento = 0	
+				if flag_cont_parada_8[n_maq] == false then 
+					qtd_paradas_8 = qtd_paradas_8 + 1
+					flag_cont_parada_8[n_maq] = true
+				end if
+		else if flag_cont_parada_8[n_maq] == true and status_ultima_parada <> 8 then
+			flag_cont_parada_8[n_maq] = false	
+							
+//tempo 9 (motivos definidos)					 			
+		else if status_ultima_parada == 9 then
+			tempo_motivos_9 = tempo_aguardando_apontamento + tempo_motivos_9 + 1
+			tempo_aguardando_apontamento = 0	
+				if flag_cont_parada_9[n_maq] == false then 
+					qtd_paradas_9 = qtd_paradas_9 + 1
+					flag_cont_parada_9[n_maq] = true
+				end if 
+		else if flag_cont_parada_9[n_maq] == true and status_ultima_parada <> 9 then
+			flag_cont_parada_9[n_maq] = false	
+							
+//tempo 10 (motivos definidos)						
+		else if status_ultima_parada == 10 then
+			tempo_motivos_10 = tempo_aguardando_apontamento + tempo_motivos_10 + 1
+			tempo_aguardando_apontamento = 0	
+				if flag_cont_parada_10[n_maq] == false then 
+					qtd_paradas_10 = qtd_paradas_10 + 1
+					flag_cont_parada_10[n_maq] = true
+				end if 
+		else if flag_cont_parada_10[n_maq] == true and status_ultima_parada <> 10 then
+			flag_cont_parada_10[n_maq] = false
+								
+//tempo 11 (motivos definidos)								
+		else if status_ultima_parada == 11 then
+			tempo_motivos_11 = tempo_aguardando_apontamento + tempo_motivos_11 + 1
+			tempo_aguardando_apontamento = 0	
+				if flag_cont_parada_11[n_maq] == false then 
+					qtd_paradas_11 = qtd_paradas_11 + 1
+					flag_cont_parada_11[n_maq] = true
+				end if 
+		else if flag_cont_parada_11[n_maq] == true and status_ultima_parada <> 11 then
+			flag_cont_parada_11[n_maq] = false	
+							
+//tempo 12 (motivos definidos)							
+		else if status_ultima_parada == 12 then
+			tempo_motivos_12 = tempo_aguardando_apontamento + tempo_motivos_12 + 1
+			tempo_aguardando_apontamento = 0	
+				if flag_cont_parada_12[n_maq] == false then 
+					qtd_paradas_12 = qtd_paradas_12 + 1
+					flag_cont_parada_12[n_maq] = true
+				end if 
+		else if flag_cont_parada_12[n_maq] == true and status_ultima_parada <> 12 then
+			flag_cont_parada_12[n_maq] = false		
+						
+//tempo 13 (motivos definidos)												
+		else if status_ultima_parada == 13 then
+			tempo_motivos_13 = tempo_aguardando_apontamento + tempo_motivos_13 + 1
+			tempo_aguardando_apontamento = 0	
+				if flag_cont_parada_13[n_maq] == false then 
+					qtd_paradas_13 = qtd_paradas_13 + 1
+					flag_cont_parada_13[n_maq] = true
+				end if 
+		else if flag_cont_parada_13[n_maq] == true and status_ultima_parada <> 13 then
+			flag_cont_parada_13[n_maq] = false	
+						
+//tempo 14 (motivos definidos)								
+		else if status_ultima_parada == 14 then
+			tempo_motivos_14 = tempo_aguardando_apontamento + tempo_motivos_14 + 1
+			tempo_aguardando_apontamento = 0		
+				if flag_cont_parada_14[n_maq] == false then 
+					qtd_paradas_14 = qtd_paradas_14 + 1
+					flag_cont_parada_14[n_maq] = true
+				end if 
+		else if flag_cont_parada_14[n_maq] == true and status_ultima_parada <> 14 then
+			flag_cont_parada_14[n_maq] = false
+								
+//tempo 15 (motivos definidos)									
+		else if status_ultima_parada == 15 then
+			tempo_motivos_15 = tempo_aguardando_apontamento + tempo_motivos_15 + 1
+			tempo_aguardando_apontamento = 0		
+				if flag_cont_parada_15[n_maq] == false then 
+					qtd_paradas_15 = qtd_paradas_15 + 1
+					flag_cont_parada_15[n_maq] = true
+				end if
+		else if flag_cont_parada_15[n_maq] == true and status_ultima_parada <> 15 then
+			flag_cont_parada_15[n_maq] = false
+			
+//tempo 16 (motivos definidos)									
+		else if status_ultima_parada == 16 then
+			tempo_motivos_16 = tempo_aguardando_apontamento + tempo_motivos_16 + 1
+			tempo_aguardando_apontamento = 0		
+				if flag_cont_parada_16[n_maq] == false then 
+					qtd_paradas_16 = qtd_paradas_16 + 1
+					flag_cont_parada_16[n_maq] = true
+				end if
+		else if flag_cont_parada_16[n_maq] == true and status_ultima_parada <> 16 then
+			flag_cont_parada_16[n_maq] = false	
+			
+//tempo 17 (motivos definidos)									
+		else if status_ultima_parada == 17 then
+			tempo_motivos_17 = tempo_aguardando_apontamento + tempo_motivos_17 + 1
+			tempo_aguardando_apontamento = 0		
+				if flag_cont_parada_17[n_maq] == false then 
+					qtd_paradas_17 = qtd_paradas_17 + 1
+					flag_cont_parada_17[n_maq] = true
+				end if
+		else if flag_cont_parada_17[n_maq] == true and status_ultima_parada <> 17 then
+			flag_cont_parada_17[n_maq] = false				
+					
+								
+//tempo 20 (motivos definidos)					 	
+		else if status_ultima_parada == 20 then
+			tempo_motivos_20 = tempo_motivos_20 + tempo_aguardando_apontamento
+			tempo_aguardando_apontamento = 0		
+				if flag_cont_parada_20[n_maq] == false then 
+					qtd_paradas_20 = qtd_paradas_20 + 1
+					flag_cont_parada_20[n_maq] = true
+				end if
+		else if flag_cont_parada_20[n_maq] == true and status_ultima_parada <> 20 then
+			flag_cont_parada_20[n_maq] = false			 
+		end if	
+	end if	
+	
+//máquina em operação	
+	if status_maq == 1 and status_prd == 1 then //máquina em operação
+		tempo_total_rodando = tempo_total_rodando + 1
+		tempo_aguardando_apontamento = 0	
+		inicio_parada = 0
+		flag_cont_parada_1[n_maq] = false
+		flag_cont_parada_2[n_maq] = false
+		flag_cont_parada_3[n_maq] = false
+		flag_cont_parada_4[n_maq] = false
+		flag_cont_parada_5[n_maq] = false
+		flag_cont_parada_6[n_maq] = false
+		flag_cont_parada_7[n_maq] = false
+		flag_cont_parada_8[n_maq] = false
+		flag_cont_parada_9[n_maq] = false
+		flag_cont_parada_10[n_maq] = false
+		flag_cont_parada_11[n_maq] = false
+		flag_cont_parada_12[n_maq] = false
+		flag_cont_parada_13[n_maq] = false
+		flag_cont_parada_14[n_maq] = false	
+		flag_cont_parada_15[n_maq] = false
+		flag_cont_parada_16[n_maq] = false
+		flag_cont_parada_17[n_maq] = false		
+		flag_cont_parada_20[n_maq] = false	
+		tempo_parada = 0
+		cont_seg = 0
+		SetData(inicio_parada, "Local HMI", RW, index + 286, 1)	
+		SetData(cont_seg, "Local HMI", RW, index + 203, 1)
+		SetData(tempo_parada, "Local HMI", RW, index + 204, 1)	
+	end if	
+	
+//contabiliza o acumulado produzido no turno
+
+	if qtd_op_teorico < qtd_turno_teorico_temp then 
+		qtd_turno_teorico_temp = qtd_op_teorico		
+	end if 
+	qtd_turno_teorico_dif = qtd_op_teorico - qtd_turno_teorico_temp
+	qtd_turno_teorico = qtd_turno_teorico + qtd_turno_teorico_dif
+	qtd_turno_teorico_temp = qtd_op_teorico	
+	qtd_turno_teorico_dif = 0
+	
+	if qtd_op_pecas_boas < qtd_turno_pecas_boas_temp then 
+		qtd_turno_pecas_boas_temp = qtd_op_pecas_boas
+	end if	
+	qtd_turno_pecas_boas_dif = qtd_op_pecas_boas - qtd_turno_pecas_boas_temp	
+	qtd_turno_pecas_boas = qtd_turno_pecas_boas + qtd_turno_pecas_boas_dif	
+	qtd_turno_pecas_boas_temp = qtd_op_pecas_boas
+	qtd_turno_pecas_boas_dif = 0
+
+	if qtd_op_refugo < qtd_turno_refugo_temp then 
+		qtd_turno_refugo_temp = qtd_op_refugo
+	end if 		
+	qtd_turno_refugo_dif = qtd_op_refugo - qtd_turno_refugo_temp
+	qtd_turno_refugo = qtd_turno_refugo + qtd_turno_refugo_dif	
+	qtd_turno_refugo_temp = qtd_op_refugo
+	qtd_turno_pecas_boas = qtd_turno_pecas_boas - qtd_turno_refugo_dif//DESCONTA O REFUGO DO ACUMULADO DE PEÇAS BOAS DO TURNO
+	qtd_turno_refugo_dif = 0	
+					
+	if qtd_turno_pecas_boas <= 0 then //VERIFICA SE O REFUGO INSERIDO É MAIOR QUE O ACUMULADO DO TURNO, CASO POSITIVO ZERA OS REGISTRADORES
+		qtd_turno_pecas_boas = 0
+	end if 
+	
+	qtd_turno_total = qtd_turno_refugo + qtd_turno_pecas_boas
+
+	SetData(qtd_turno_teorico, "Local HMI", RW, index + 195, 1)	
+	SetData(qtd_turno_pecas_boas, "Local HMI", RW, index + 197, 1)
+	SetData(qtd_turno_refugo, "Local HMI", RW, index + 199, 1)	
+	SetData(qtd_turno_total, "Local HMI", RW, index + 201, 1)		
+	SetData(qtd_turno_teorico_temp, "Local HMI", RW, index + 288, 1)	
+	SetData(qtd_turno_teorico_dif, "Local HMI", RW, index + 290, 1)	
+	SetData(qtd_turno_pecas_boas_temp, "Local HMI", RW, index + 292, 1)	
+	SetData(qtd_turno_pecas_boas_dif, "Local HMI", RW, index + 294, 1)			
+	SetData(qtd_turno_refugo_temp, "Local HMI", RW, index + 296, 1)	
+	SetData(qtd_turno_refugo_dif, "Local HMI", RW, index + 298, 1)
+
+
+//atualiza variáveis após contabilizado		
+	SetData(tempo_total_rodando, "Local HMI", RW, index + 102, 1)	
+	SetData(tempo_aguardando_apontamento, "Local HMI", RW, index + 104, 1)
+	SetData(tempo_motivos_1, "Local HMI", RW, index + 106, 1)
+	SetData(tempo_motivos_2, "Local HMI", RW, index + 108, 1)
+	SetData(tempo_motivos_3, "Local HMI", RW, index + 110, 1)
+	SetData(tempo_motivos_4, "Local HMI", RW, index + 112, 1)
+	SetData(tempo_motivos_5, "Local HMI", RW, index + 114, 1)
+	SetData(tempo_motivos_6, "Local HMI", RW, index + 116, 1)
+	SetData(tempo_motivos_7, "Local HMI", RW, index + 118, 1)
+	SetData(tempo_motivos_8, "Local HMI", RW, index + 120, 1)
+	SetData(tempo_motivos_9, "Local HMI", RW, index + 122, 1)
+	SetData(tempo_motivos_10, "Local HMI", RW, index + 124, 1)
+	SetData(tempo_motivos_11, "Local HMI", RW, index + 126, 1)
+	SetData(tempo_motivos_12, "Local HMI", RW, index + 128, 1)
+	SetData(tempo_motivos_13, "Local HMI", RW, index + 130, 1)
+	SetData(tempo_motivos_14, "Local HMI", RW, index + 132, 1)
+	SetData(tempo_motivos_15, "Local HMI", RW, index + 134, 1)
+	SetData(tempo_motivos_16, "Local HMI", RW, index + 136, 1)	
+	SetData(tempo_motivos_17, "Local HMI", RW, index + 138, 1)	
+	SetData(tempo_motivos_20, "Local HMI", RW, index + 144, 1)	
+
+	SetData(qtd_paradas_1, "Local HMI", RW, index + 167, 1)
+	SetData(qtd_paradas_2, "Local HMI", RW, index + 168, 1)
+	SetData(qtd_paradas_3, "Local HMI", RW, index + 169, 1)
+	SetData(qtd_paradas_4, "Local HMI", RW, index + 170, 1)
+	SetData(qtd_paradas_5, "Local HMI", RW, index + 171, 1)
+	SetData(qtd_paradas_6, "Local HMI", RW, index + 172, 1)
+	SetData(qtd_paradas_7, "Local HMI", RW, index + 173, 1)
+	SetData(qtd_paradas_8, "Local HMI", RW, index + 174, 1)
+	SetData(qtd_paradas_9, "Local HMI", RW, index + 175, 1)
+	SetData(qtd_paradas_10, "Local HMI", RW, index + 176, 1)
+	SetData(qtd_paradas_11, "Local HMI", RW, index + 177, 1)
+	SetData(qtd_paradas_12, "Local HMI", RW, index + 178, 1)
+	SetData(qtd_paradas_13, "Local HMI", RW, index + 179, 1)
+	SetData(qtd_paradas_14, "Local HMI", RW, index + 180, 1)
+	SetData(qtd_paradas_15, "Local HMI", RW, index + 181, 1)
+	SetData(qtd_paradas_16, "Local HMI", RW, index + 182, 1)
+	SetData(qtd_paradas_17, "Local HMI", RW, index + 183, 1)
+	SetData(qtd_paradas_20, "Local HMI", RW, index + 186, 1)
+	
+//cálculo tempo decorrido do turno
+	tempo_total = tempo_total_rodando + tempo_aguardando_apontamento + tempo_motivos_1 + tempo_motivos_2 + tempo_motivos_3 + tempo_motivos_4 + tempo_motivos_5 + tempo_motivos_6 + tempo_motivos_7 + tempo_motivos_8 + tempo_motivos_9 + tempo_motivos_10 + tempo_motivos_11 + tempo_motivos_12 + tempo_motivos_13 + tempo_motivos_14 + tempo_motivos_15 + tempo_motivos_16 + tempo_motivos_17 + tempo_motivos_20
+	SetData(tempo_total, "Local HMI", RW, index + 100, 1)
+	
+//cálculo de porcentagem para gráfico
+	porcent_aguardando_apontamento = (tempo_aguardando_apontamento * 100) / tempo_total
+	porcent_motivos_1 = (tempo_motivos_1 * 100) / tempo_total
+	porcent_motivos_2 = (tempo_motivos_2 * 100) / tempo_total
+	porcent_motivos_3 = (tempo_motivos_3 * 100) / tempo_total
+	porcent_motivos_4 = (tempo_motivos_4 * 100) / tempo_total
+	porcent_motivos_5 = (tempo_motivos_5 * 100) / tempo_total
+	porcent_motivos_6 = (tempo_motivos_6 * 100) / tempo_total
+	porcent_motivos_7 = (tempo_motivos_7 * 100) / tempo_total
+	porcent_motivos_8 = (tempo_motivos_8 * 100) / tempo_total
+	porcent_motivos_9 = (tempo_motivos_9 * 100) / tempo_total
+	porcent_motivos_10 = (tempo_motivos_10 * 100) / tempo_total
+	porcent_motivos_11 = (tempo_motivos_11 * 100) / tempo_total
+	porcent_motivos_12 = (tempo_motivos_12 * 100) / tempo_total
+	porcent_motivos_13 = (tempo_motivos_13 * 100) / tempo_total
+	porcent_motivos_14 = (tempo_motivos_14 * 100) / tempo_total
+	porcent_motivos_15 = (tempo_motivos_15 * 100) / tempo_total
+	porcent_motivos_16 = (tempo_motivos_16  * 100) / tempo_total
+	porcent_motivos_17 = (tempo_motivos_17  * 100) / tempo_total	
+	porcent_motivos_20 = (tempo_motivos_20  * 100) / tempo_total	
+	
+	SetData(porcent_aguardando_apontamento, "Local HMI", RW,  index + 146, 1)
+	SetData(porcent_motivos_1, "Local HMI", RW,  index + 147, 1)
+	SetData(porcent_motivos_2, "Local HMI", RW,  index + 148, 1)
+	SetData(porcent_motivos_3, "Local HMI", RW,  index + 149, 1)
+	SetData(porcent_motivos_4, "Local HMI", RW,  index + 150, 1)
+	SetData(porcent_motivos_5, "Local HMI", RW,  index + 151, 1)
+	SetData(porcent_motivos_6, "Local HMI", RW,  index + 152, 1)
+	SetData(porcent_motivos_7, "Local HMI", RW,  index + 153, 1)
+	SetData(porcent_motivos_8, "Local HMI", RW,  index + 154, 1)
+	SetData(porcent_motivos_9, "Local HMI", RW,  index + 155, 1)
+	SetData(porcent_motivos_10, "Local HMI", RW,  index + 156, 1)
+	SetData(porcent_motivos_11, "Local HMI", RW,  index + 157, 1)
+	SetData(porcent_motivos_12, "Local HMI", RW,  index + 158, 1)
+	SetData(porcent_motivos_13, "Local HMI", RW,  index + 159, 1)
+	SetData(porcent_motivos_14, "Local HMI", RW,  index + 160, 1)
+	SetData(porcent_motivos_15, "Local HMI", RW,  index + 161, 1)
+	SetData(porcent_motivos_16, "Local HMI", RW,  index + 162, 1)	
+	SetData(porcent_motivos_17, "Local HMI", RW,  index + 163, 1)
+	SetData(porcent_motivos_20, "Local HMI", RW,  index + 166, 1)	
+	
+//cálculo de disponibilidade da máquina
+	porcent_disponibilidade = (tempo_total_rodando * 100.0) / tempo_total
+	SetData(porcent_disponibilidade, "Local HMI", RW, index + 187, 1)
+
+//cálculo de performance
+	porcent_performance = (qtd_turno_total / qtd_turno_teorico) * 100.0
+	SetData(porcent_performance, "Local HMI", RW, index + 189, 1)
+
+//cálculo de qualidade
+	porcent_qualidade = (qtd_turno_pecas_boas / qtd_turno_total) * 100.0
+	SetData(porcent_qualidade, "Local HMI", RW, index + 191, 1)
+	
+//cálculo OEE
+	disponibilidade = (tempo_total_rodando * 1.0) / tempo_total
+	performance = qtd_turno_total / qtd_turno_teorico
+	qualidade = qtd_turno_pecas_boas / qtd_turno_total	
+	porcent_oee = (disponibilidade * performance * qualidade) * 100.0
+	SetData(porcent_oee, "Local HMI", RW, index + 193, 1)
+	
+next
+
+end macro_command

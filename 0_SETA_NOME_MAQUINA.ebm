@@ -1,0 +1,53 @@
+﻿macro_definition_begin
+    "id": "0"
+    "name": "SETA_NOME_MAQUINA"
+    "startup": "true"
+    "periodic": [ "false" ]
+    "interlock": [ "false" ]
+macro_definition_end
+
+
+macro_command main()
+
+char P0[10]="PCVA-0001", P1[10]="PCVA-0011", P2[10]="PCVA-0012", P3[10]="PCVA-0013", P4[10]="PCVA-0014", P5[10]="PCVA-0015"
+char P6[10]="PCVA-0016", P7[10]="PCVA-0017", P8[10]="PCVA-0018", P9[10]="PCVA-0019", P10[10]="PCVA-0020", P11[10]="PCVA-0022"
+char P12[10]="PCVA-0026", P13[10]="PCVA-0027", P14[10]="PRNS-0008", P15[10]="PCVA-0030", P16[10]="PCVA-0033", P17[10]="PCVA-0036"
+char P18[10]="PCVA-0037", P19[10]="PCVA-0044", P20[10]="PCVA-0045", P21[10]="PCVA-0046"
+char P22[10]="PRNS-0009", P23[10]="PRPR-0007", P24[10]="PRPR-0008", P25[10]="PRPR-0011", P26[10]="PRNS-0007", P27[10]="PRPR-0014"
+char P28[10]="PCVA-0021", P29[10]="PCVA-0023", P30[10]="PRNS-0011", P31[10]="PRNS-0010"
+
+
+SetData(P0[0], "Local HMI", RW_A, 2000, 10)
+SetData(P1[0], "Local HMI", RW_A, 2005, 10)
+SetData(P2[0], "Local HMI", RW_A, 2010, 10)
+SetData(P3[0], "Local HMI", RW_A, 2015, 10)
+SetData(P4[0], "Local HMI", RW_A, 2020, 10)
+SetData(P5[0], "Local HMI", RW_A, 2025, 10)
+SetData(P6[0], "Local HMI", RW_A, 2030, 10)
+SetData(P7[0], "Local HMI", RW_A, 2035, 10)
+SetData(P8[0], "Local HMI", RW_A, 2040, 10)
+SetData(P9[0], "Local HMI", RW_A, 2045, 10)
+SetData(P10[0], "Local HMI", RW_A, 2050, 10)
+SetData(P11[0], "Local HMI", RW_A, 2055, 10)
+SetData(P12[0], "Local HMI", RW_A, 2060, 10)
+SetData(P13[0], "Local HMI", RW_A, 2065, 10)
+SetData(P14[0], "Local HMI", RW_A, 2070, 10)
+SetData(P15[0], "Local HMI", RW_A, 2075, 10)
+SetData(P16[0], "Local HMI", RW_A, 2080, 10)
+SetData(P17[0], "Local HMI", RW_A, 2085, 10)
+SetData(P18[0], "Local HMI", RW_A, 2090, 10)
+SetData(P19[0], "Local HMI", RW_A, 2095, 10)
+SetData(P20[0], "Local HMI", RW_A, 2100, 10)
+SetData(P21[0], "Local HMI", RW_A, 2105, 10)
+SetData(P22[0], "Local HMI", RW_A, 2110, 10)
+SetData(P23[0], "Local HMI", RW_A, 2115, 10)
+SetData(P24[0], "Local HMI", RW_A, 2120, 10)
+SetData(P25[0], "Local HMI", RW_A, 2125, 10)
+SetData(P26[0], "Local HMI", RW_A, 2130, 10)
+SetData(P27[0], "Local HMI", RW_A, 2135, 10)
+SetData(P28[0], "Local HMI", RW_A, 2140, 10)
+SetData(P29[0], "Local HMI", RW_A, 2145, 10)
+SetData(P30[0], "Local HMI", RW_A, 2150, 10)
+SetData(P31[0], "Local HMI", RW_A, 2155, 10)
+
+end macro_command

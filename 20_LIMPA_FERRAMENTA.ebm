@@ -1,0 +1,21 @@
+﻿macro_definition_begin
+    "id": "20"
+    "name": "LIMPA_FERRAMENTA"
+    "startup": "false"
+    "periodic": [ "false" ]
+    "interlock": [ "false" ]
+macro_definition_end
+
+macro_command main()
+
+short dadosFerramenta[40]
+short codErro = 0
+short statusBusca = 0
+
+FILL(dadosFerramenta[0], 0, 40)
+SetData(dadosFerramenta[0], "Local HMI", LW, 800, 40)
+SetData(statusBusca, "Local HMI", LW, 840, 1)
+SetData(codErro, "Local HMI", LW, 703, 1)
+
+
+end macro_command

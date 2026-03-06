@@ -1,0 +1,108 @@
+﻿macro_definition_begin
+    "id": "19"
+    "name": "CRIA_FERRAMENTA"
+    "startup": "false"
+    "periodic": [ "false" ]
+    "interlock": [ "false" ]
+macro_definition_end
+
+macro_command main()
+
+short dadosFerramenta[40]
+short codErro = 0
+short statusBusca = 0
+short comandoBusca = 0 
+
+
+FILL(dadosFerramenta[0], 0, 40)
+GetData(codErro, "Local HMI", LW, 703, 1)
+GetData(comandoBusca, "Local HMI", LW, 700, 1)
+
+if comandoBusca <> 0 then
+	statusBusca = 0
+	SetData(statusBusca, "Local HMI", LW, 840, 1)	
+end if
+
+
+if codErro <> 0 then
+
+	SetData(dadosFerramenta[0], "Local HMI", LW, 800, 40)
+
+	select case codErro
+	case 1
+	statusBusca = 1
+	SetData(statusBusca, "Local HMI", LW, 840, 1)
+	break
+
+	case 2
+	statusBusca = 2
+	SetData(statusBusca, "Local HMI", LW, 840, 1)
+	break
+	
+	case 3
+	statusBusca = 3
+	SetData(statusBusca, "Local HMI", LW, 840, 1)
+	break	
+
+	case 4
+	statusBusca = 4
+	SetData(statusBusca, "Local HMI", LW, 840, 1)
+	break
+	
+	case 5
+	statusBusca = 5
+	SetData(statusBusca, "Local HMI", LW, 840, 1)
+	break
+	
+	case 6
+	statusBusca = 6
+	SetData(statusBusca, "Local HMI", LW, 840, 1)
+	break
+	
+	case 7
+	statusBusca = 7
+	SetData(statusBusca, "Local HMI", LW, 840, 1)
+	break		
+	
+	case 8
+	statusBusca = 8
+	SetData(statusBusca, "Local HMI", LW, 840, 1)
+	break	
+	
+	case 9
+	statusBusca = 9
+	SetData(statusBusca, "Local HMI", LW, 840, 1)
+	break	
+	
+	case 10
+	statusBusca = 10
+	SetData(statusBusca, "Local HMI", LW, 840, 1)
+	break
+	
+	case 11
+	statusBusca = 11
+	SetData(statusBusca, "Local HMI", LW, 840, 1)
+	break	
+	
+	case 12
+	statusBusca = 12
+	SetData(statusBusca, "Local HMI", LW, 840, 1)
+	break	
+		
+	case 13
+	statusBusca = 13
+	SetData(statusBusca, "Local HMI", LW, 840, 1)
+	break	
+		
+	end select
+
+	codErro = 0
+	SetData(codErro, "Local HMI", LW, 703, 1)
+
+
+end if  
+
+
+
+
+end macro_command

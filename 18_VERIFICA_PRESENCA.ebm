@@ -1,0 +1,274 @@
+﻿macro_definition_begin
+    "id": "18"
+    "name": "VERIFICA_PRESENCA"
+    "startup": "false"
+    "periodic": [ "true", "100" ]
+    "interlock": [ "false" ]
+macro_definition_end
+
+macro_command main()
+
+bool conec_pcva_0001 = false
+bool conec_pcva_0011 = false
+bool conec_pcva_0012 = false
+bool conec_pcva_0013 = false
+bool conec_pcva_0014 = false
+bool conec_pcva_0015 = false
+bool conec_pcva_0016 = false
+bool conec_pcva_0017 = false
+bool conec_pcva_0018 = false
+bool conec_pcva_0019 = false
+bool conec_pcva_0020 = false
+bool conec_pcva_0022 = false
+bool conec_pcva_0026 = false
+bool conec_pcva_0027 = false
+bool conec_prns_0008 = false
+bool conec_pcva_0030 = false
+bool conec_pcva_0033 = false
+bool conec_pcva_0036 = false
+bool conec_pcva_0037 = false
+bool conec_pcva_0044 = false
+bool conec_pcva_0045 = false
+bool conec_pcva_0046 = false
+bool conec_prns_0009 = false
+bool conec_prpr_0007 = false
+bool conec_prpr_0008 = false
+bool conec_prpr_0011 = false
+bool conec_prns_0007 = false
+bool conec_prpr_0014 = false
+bool conec_pcva_0021 = false
+bool conec_pcva_0023 = false
+bool conec_prns_0011 = false
+bool conec_prns_0010 = false
+
+short status_maq = 0
+short status_prod = 0
+short status_parada = 0
+
+GetData(conec_pcva_0001, "Local HMI", LB, 10100, 1)
+GetData(conec_pcva_0015, "Local HMI", LB, 10400, 1)
+GetData(conec_pcva_0016, "Local HMI", LB, 10700, 1)
+GetData(conec_pcva_0022, "Local HMI", LB, 11000, 1)
+GetData(conec_pcva_0033, "Local HMI", LB, 11300, 1)
+GetData(conec_pcva_0036, "Local HMI", LB, 11600, 1)
+GetData(conec_pcva_0037, "Local HMI", LB, 11900, 1)
+GetData(conec_pcva_0044, "Local HMI", LB, 11901, 1)
+GetData(conec_pcva_0045, "Local HMI", LB, 11902, 1)
+GetData(conec_pcva_0046, "Local HMI", LB, 11903, 1)
+GetData(conec_prpr_0007, "Local HMI", LB, 11904, 1)
+GetData(conec_prpr_0008, "Local HMI", LB, 11905, 1)
+GetData(conec_prpr_0011, "Local HMI", LB, 11906, 1)
+GetData(conec_prpr_0014, "Local HMI", LB, 11907, 1)
+
+GetData(conec_pcva_0020, "Local HMI", LB, 9100, 1)
+GetData(conec_pcva_0019, "Local HMI", LB, 9101, 1)
+GetData(conec_pcva_0027, "Local HMI", LB, 9102, 1)
+GetData(conec_prns_0008, "Local HMI", LB, 9103, 1)
+GetData(conec_pcva_0030, "Local HMI", LB, 9104, 1)
+GetData(conec_pcva_0014, "Local HMI", LB, 9105, 1)
+GetData(conec_pcva_0017, "Local HMI", LB, 9106, 1)
+GetData(conec_pcva_0018, "Local HMI", LB, 9107, 1)
+GetData(conec_pcva_0021, "Local HMI", LB, 9108, 1)
+GetData(conec_pcva_0023, "Local HMI", LB, 9109, 1)
+GetData(conec_pcva_0011, "Local HMI", LB, 9110, 1)
+GetData(conec_pcva_0012, "Local HMI", LB, 9111, 1)
+GetData(conec_pcva_0026, "Local HMI", LB, 9112, 1)
+GetData(conec_pcva_0013, "Local HMI", LB, 9113, 1)
+GetData(conec_prns_0009, "Local HMI", LB, 9114, 1)
+GetData(conec_prns_0007, "Local HMI", LB, 9115, 1)
+GetData(conec_prns_0011, "Local HMI", LB, 9116, 1)
+GetData(conec_prns_0010, "Local HMI", LB, 9117, 1)
+
+if conec_pcva_0001 == false then
+	SetData(status_maq, "Local HMI", RW, 30101, 1)
+	SetData(status_prod, "Local HMI", RW, 30102, 1) 
+	SetData(status_parada, "Local HMI", RW, 30103, 1) 	
+end if 
+
+if conec_pcva_0011 == false then
+	SetData(status_maq, "Local HMI", RW, 30601, 1)
+	SetData(status_prod, "Local HMI", RW, 30602, 1) 
+	SetData(status_parada, "Local HMI", RW, 30603, 1) 	
+end if 
+
+if conec_pcva_0012 == false then 
+	SetData(status_maq, "Local HMI", RW, 31101, 1)
+	SetData(status_prod, "Local HMI", RW, 31102, 1)
+	SetData(status_parada, "Local HMI", RW, 31103, 1)
+end if 
+
+if conec_pcva_0013 == false then 
+	SetData(status_maq, "Local HMI", RW, 31601, 1)
+	SetData(status_prod, "Local HMI", RW, 31602, 1)
+	SetData(status_parada, "Local HMI", RW, 31603, 1)
+end if 
+
+if conec_pcva_0014 == false then 
+	SetData(status_maq, "Local HMI", RW, 32101, 1)
+	SetData(status_prod, "Local HMI", RW, 32102, 1)
+	SetData(status_parada, "Local HMI", RW, 32103, 1)	
+end if 
+	
+if conec_pcva_0015 == false then 
+	SetData(status_maq, "Local HMI", RW, 32601, 1)
+	SetData(status_prod, "Local HMI", RW, 32602, 1)
+	SetData(status_parada, "Local HMI", RW, 32603, 1)
+end if 
+	
+if conec_pcva_0016 == false then 
+	SetData(status_maq, "Local HMI", RW, 33101, 1)
+	SetData(status_prod, "Local HMI", RW, 33102, 1)	
+	SetData(status_parada, "Local HMI", RW, 33103, 1)
+end if 
+	
+if conec_pcva_0017 == false then 
+	SetData(status_maq, "Local HMI", RW, 33601, 1)
+	SetData(status_prod, "Local HMI", RW, 33602, 1)
+	SetData(status_parada, "Local HMI", RW, 33603, 1)	
+end if 
+	
+if conec_pcva_0018 == false then 
+	SetData(status_maq, "Local HMI", RW, 34101, 1)
+	SetData(status_prod, "Local HMI", RW, 34102, 1)
+	SetData(status_parada, "Local HMI", RW, 34103, 1)	
+end if 
+	
+if conec_pcva_0019 == false then 
+	SetData(status_maq, "Local HMI", RW, 34601, 1)
+	SetData(status_prod, "Local HMI", RW, 34602, 1)
+	SetData(status_parada, "Local HMI", RW, 34603, 1)	
+end if 
+	
+if conec_pcva_0020 == false then 
+	SetData(status_maq, "Local HMI", RW, 35101, 1)
+	SetData(status_prod, "Local HMI", RW, 35102, 1)
+	SetData(status_parada, "Local HMI", RW, 35103, 1)	
+end if 
+	
+if conec_pcva_0022 == false then 
+	SetData(status_maq, "Local HMI", RW, 35601, 1)
+	SetData(status_prod, "Local HMI", RW, 35602, 1)
+	SetData(status_parada, "Local HMI", RW, 35603, 1)	
+end if 
+	
+if conec_pcva_0026 == false then 
+	SetData(status_maq, "Local HMI", RW, 36101, 1)
+	SetData(status_prod, "Local HMI", RW, 36102, 1)
+	SetData(status_parada, "Local HMI", RW, 36103, 1)	
+end if 
+	
+if conec_pcva_0027 == false then 
+	SetData(status_maq, "Local HMI", RW, 36601, 1)
+	SetData(status_prod, "Local HMI", RW, 36602, 1)
+	SetData(status_parada, "Local HMI", RW, 36603, 1)	
+end if 
+
+if conec_prns_0008 == false then 
+	SetData(status_maq, "Local HMI", RW, 37101, 1)
+	SetData(status_prod, "Local HMI", RW, 37102, 1)	
+	SetData(status_parada, "Local HMI", RW, 37103, 1)
+end if
+	
+if conec_pcva_0030 == false then 
+	SetData(status_maq, "Local HMI", RW, 37601, 1)
+	SetData(status_prod, "Local HMI", RW, 37602, 1)	
+	SetData(status_parada, "Local HMI", RW, 37603, 1)
+end if
+
+if conec_pcva_0033 == false then 
+	SetData(status_maq, "Local HMI", RW, 38101, 1)
+	SetData(status_prod, "Local HMI", RW, 38102, 1)
+	SetData(status_parada, "Local HMI", RW, 38103, 1)
+end if
+	
+if conec_pcva_0036 == false then 
+	SetData(status_maq, "Local HMI", RW, 38601, 1)
+	SetData(status_prod, "Local HMI", RW, 38602, 1)
+	SetData(status_parada, "Local HMI", RW, 38603, 1)	
+end if
+	
+if conec_pcva_0037 == false then 
+	SetData(status_maq, "Local HMI", RW, 39101, 1)
+	SetData(status_prod, "Local HMI", RW, 39102, 1)
+	SetData(status_parada, "Local HMI", RW, 39103, 1)	
+end if
+	
+if conec_pcva_0044 == false then 
+	SetData(status_maq, "Local HMI", RW, 39601, 1)
+	SetData(status_prod, "Local HMI", RW, 39602, 1)
+	SetData(status_parada, "Local HMI", RW, 39603, 1)	
+end if
+	
+if conec_pcva_0045 == false then 
+SetData(status_maq, "Local HMI", RW, 40101, 1)
+SetData(status_prod, "Local HMI", RW, 40102, 1)
+SetData(status_parada, "Local HMI", RW, 40103, 1)
+end if	
+	
+if conec_pcva_0046 == false then 
+	SetData(status_maq, "Local HMI", RW, 40601, 1)
+	SetData(status_prod, "Local HMI", RW, 40602, 1)	
+	SetData(status_parada, "Local HMI", RW, 40603, 1)	
+end if 
+
+if conec_prns_0009 == false then 
+	SetData(status_maq, "Local HMI", RW, 41101, 1)
+	SetData(status_prod, "Local HMI", RW, 41102, 1)
+	SetData(status_parada, "Local HMI", RW, 41103, 1)		
+end if 
+
+if conec_prpr_0007 == false then 
+	SetData(status_maq, "Local HMI", RW, 41601, 1)
+	SetData(status_prod, "Local HMI", RW, 41602, 1)
+	SetData(status_parada, "Local HMI", RW, 41603, 1)		
+end if
+
+if conec_prpr_0008 == false then 
+	SetData(status_maq, "Local HMI", RW, 42101, 1)
+	SetData(status_prod, "Local HMI", RW, 42102, 1)
+	SetData(status_parada, "Local HMI", RW, 42103, 1)		
+end if
+
+if conec_prpr_0011 == false then 
+	SetData(status_maq, "Local HMI", RW, 42601, 1)
+	SetData(status_prod, "Local HMI", RW, 42602, 1)	
+	SetData(status_parada, "Local HMI", RW, 42603, 1)	
+end if
+
+if conec_prns_0007 == false then 
+	SetData(status_maq, "Local HMI", RW, 43101, 1)
+	SetData(status_prod, "Local HMI", RW, 43102, 1)
+	SetData(status_parada, "Local HMI", RW, 43103, 1)		
+end if
+
+if conec_prpr_0014 == false then 
+	SetData(status_maq, "Local HMI", RW, 43601, 1)
+	SetData(status_prod, "Local HMI", RW, 43602, 1)	
+	SetData(status_parada, "Local HMI", RW, 43603, 1)	
+end if
+
+if conec_pcva_0021 == false then 
+	SetData(status_maq, "Local HMI", RW, 44101, 1)
+	SetData(status_prod, "Local HMI", RW, 44102, 1)	
+	SetData(status_parada, "Local HMI", RW, 44103, 1)	
+end if
+
+if conec_pcva_0023 == false then 
+	SetData(status_maq, "Local HMI", RW, 44601, 1)
+	SetData(status_prod, "Local HMI", RW, 44602, 1)
+	SetData(status_parada, "Local HMI", RW, 44603, 1)		
+end if 
+
+if conec_prns_0011 == false then 
+	SetData(status_maq, "Local HMI", RW, 45101, 1)
+	SetData(status_prod, "Local HMI", RW, 45102, 1)
+	SetData(status_parada, "Local HMI", RW, 45103, 1)		
+end if 
+
+if conec_prns_0010 == false then 
+	SetData(status_maq, "Local HMI", RW, 45601, 1)
+	SetData(status_prod, "Local HMI", RW, 45602, 1)
+	SetData(status_parada, "Local HMI", RW, 45603, 1)		
+end if 
+
+end macro_command

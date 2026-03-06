@@ -1,0 +1,29 @@
+﻿macro_definition_begin
+    "id": "4"
+    "name": "GERENCIAMENTO_CALCULO_OEE"
+    "startup": "false"
+    "periodic": [ "true", "10" ]
+    "interlock": [ "false" ]
+macro_definition_end
+macro_command main()
+
+bool turno_1 = false, turno_2 = false, turno_3 = false
+bool oee_ativo = false
+bool pausa_inicio_turno = false, pausa_fim_turno = false
+
+GetData(turno_1, "Local HMI", RW_A_Bit, 50000, 1)
+GetData(turno_2, "Local HMI", RW_A_Bit, 60000, 1)
+GetData(turno_3, "Local HMI", RW_A_Bit, 70000, 1)
+GetData(pausa_inicio_turno, "Local HMI", LB, 600, 1)
+GetData(pausa_fim_turno, "Local HMI", LB, 601, 1)
+
+//pausa OEE
+if (turno_1 == true or turno_2 == true or turno_3 == true) and pausa_inicio_turno == false and pausa_fim_turno == false then
+	oee_ativo = true
+	SetData(oee_ativo, "Local HMI", LB, 602, 1)
+else 
+	oee_ativo = false
+	SetData(oee_ativo, "Local HMI", LB, 602, 1)
+end if 
+
+end macro_command

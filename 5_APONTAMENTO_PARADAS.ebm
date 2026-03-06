@@ -1,0 +1,129 @@
+﻿macro_definition_begin
+    "id": "5"
+    "name": "APONTAMENTO_PARADAS"
+    "startup": "false"
+    "periodic": [ "true", "10" ]
+    "interlock": [ "true", "off", "none", "LB", "602" ]
+macro_definition_end
+macro_command main()
+
+short status_MQ = 0
+short status_PROD = 0
+short inicio_parada_MQ = 0
+short sqlquery_parada = 0
+short n_maq = 0
+short index = 0, index_1 = 0
+short aguarda_comando = 0
+short nome_MQ[5] = {0,0,0,0,0}
+short ordem_producao[6] = {0,0,0,0,0,0}
+short ultima_parada_MQ = 0
+short nome_turno = 0
+short motivo_parada = 0
+short motivo_parada_anterior = 0  // Variável para armazenar o motivo da parada anterior
+short timeout = 0
+short max_timeout = 1000  // Definido uma vez no início
+
+// Obtendo dados do turno
+GetData(nome_turno, "Local HMI", RW_A, 3000, 1)
+
+if nome_turno <> 0 then  // Verifica se o nome do turno é diferente de 0
+    for n_maq = 0 to 31
+        index = (n_maq * 500)
+        index_1 = (n_maq * 5)
+
+        // Leitura dos dados
+        GetData(status_MQ, "Local HMI", RW, (30101 + index), 1)
+        GetData(status_PROD, "Local HMI", RW, (30102 + index), 1)
+        GetData(inicio_parada_MQ, "Local HMI", RW_A, (9000 + n_maq), 1)
+        GetData(ultima_parada_MQ, "Local HMI", RW, (30104 + index), 1)
+        GetData(nome_MQ[0], "Local HMI", RW_A, (2000 + index_1), 5)
+        GetData(ordem_producao[0], "Local HMI", RW, (30124 + index), 6)
+        GetData(motivo_parada, "Local HMI", RW, (30103 + index), 1)  // Motivo da parada
+
+        SetData(ultima_parada_MQ, "Local HMI", LW, 370, 1)
+        SetData(nome_MQ[0], "Local HMI", LW, 371, 5)
+        SetData(ordem_producao[0], "Local HMI", LW, 376, 6)
+
+        // Verifica se a máquina está parada (status_MQ <> 1 and status_PROD <> 1)
+        if status_MQ <> 1 and status_PROD <> 1 then
+            // Caso a produção e a prensa estejam paradas
+            if inicio_parada_MQ == 0 then  // Se a parada ainda não foi iniciada
+                inicio_parada_MQ = 1
+                SetData(inicio_parada_MQ, "Local HMI", RW_A, (9000 + n_maq), 1)
+                sqlquery_parada = 1  // Código para registrar o início da parada
+                SetData(sqlquery_parada, "Local HMI", LW, 300, 1)
+
+                timeout = 0  // Inicia o tempo de espera
+                while sqlquery_parada <> 0 and timeout < max_timeout
+                    GetData(sqlquery_parada, "Local HMI", LW, 300, 1)
+                    if sqlquery_parada == 0 then
+                        break  // Se a consulta for concluída, quebra o loop
+                    end if
+                    DELAY(1)  // Aguarda 1 segundo
+                    timeout = timeout + 1  // Conta o tempo
+                wend
+            end if  // Fim do if para a parada ser iniciada
+
+            // Verifica se o motivo da parada mudou de 0 para outro valor
+            else if motivo_parada <> motivo_parada_anterior and motivo_parada <> 0 then
+                // Finaliza a parada anterior com o motivo anterior
+                if motivo_parada_anterior <> 0 then
+                    sqlquery_parada = 2  // Código para registrar o fim da parada
+                    SetData(sqlquery_parada, "Local HMI", LW, 300, 1)
+
+                    timeout = 0  // Inicia o tempo de espera
+                    while sqlquery_parada <> 0 and timeout < max_timeout
+                        GetData(sqlquery_parada, "Local HMI", LW, 300, 1)
+                        if sqlquery_parada == 0 then
+                            break  // Se a consulta for concluída, quebra o loop
+                        end if
+                        DELAY(1)  // Aguarda 1 segundo
+                        timeout = timeout + 1  // Conta o tempo
+                    wend
+                end if  // Fim do if para finalizar a parada anterior
+
+                // Inicia uma nova parada com o novo motivo
+                inicio_parada_MQ = 1
+                SetData(inicio_parada_MQ, "Local HMI", RW_A, (9000 + n_maq), 1)
+                sqlquery_parada = 1  // Código para registrar o início da parada
+                SetData(sqlquery_parada, "Local HMI", LW, 300, 1)
+
+                timeout = 0  // Reinicia o tempo de espera
+                while sqlquery_parada <> 0 and timeout < max_timeout
+                    GetData(sqlquery_parada, "Local HMI", LW, 300, 1)
+                    if sqlquery_parada == 0 then
+                        break  // Se a consulta for concluída, quebra o loop
+                    end if
+                    DELAY(1)  // Aguarda 1 segundo
+                    timeout = timeout + 1  // Conta o tempo
+                wend
+            end if  // Fim do else if para mudança de motivo
+
+        // Atualiza o motivo da parada anterior
+        motivo_parada_anterior = motivo_parada  // Atualiza o motivo da parada anterior
+
+        // Se a máquina voltou a produzir (status_MQ == 1 and status_PROD == 1)
+        if status_MQ == 1 and status_PROD == 1 and inicio_parada_MQ == 1 then
+            // Finaliza a parada com o último motivo selecionado
+            inicio_parada_MQ = 0
+            SetData(inicio_parada_MQ, "Local HMI", RW_A, (9000 + n_maq), 1)
+            sqlquery_parada = 2  // Código para registrar o fim da parada
+            SetData(sqlquery_parada, "Local HMI", LW, 300, 1)
+
+            timeout = 0  // Reinicia o tempo de espera
+            while sqlquery_parada <> 0 and timeout < max_timeout
+                GetData(sqlquery_parada, "Local HMI", LW, 300, 1)
+                if sqlquery_parada == 0 then
+                    break  // Se a consulta for concluída, quebra o loop
+                end if
+                DELAY(1)  // Aguarda 1 segundo
+                timeout = timeout + 1  // Conta o tempo
+            wend
+
+            aguarda_comando = 0
+            sqlquery_parada = 0
+        end if  // Fim do if para retorno à produção
+    next
+end if  // Fim do if para nome_turno
+
+end macro_command

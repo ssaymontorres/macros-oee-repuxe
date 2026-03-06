@@ -1,0 +1,50 @@
+﻿macro_definition_begin
+    "id": "1"
+    "name": "CONFIGURA_TURNOS"
+    "startup": "true"
+    "periodic": [ "true", "600" ]
+    "interlock": [ "false" ]
+macro_definition_end
+macro_command main()
+
+short action_mode = 0
+short control = 0
+short second = 0
+short day_t1 = 0, day_t2 = 0, day_t3 = 0 
+
+DELAY(1000)
+
+//CONFIGURA DIAS DA SEMANA DO TURNO 1
+GetData(day_t1, "Local HMI", RW_A, 1003, 1)
+SetData(day_t1, "Local HMI", RW_A, 1007, 1)
+//CONFIGURA DIAS DA SEMANA DO TURNO 2
+GetData(day_t2, "Local HMI", RW_A, 1043, 1)
+SetData(day_t2, "Local HMI", RW_A, 1047, 1)
+//CONFIGURA DIAS DA SEMANA DO TURNO 3
+GetData(day_t3, "Local HMI", RW_A, 1083, 1)
+SetData(day_t3, "Local HMI", RW_A, 1087, 1)
+//CONFIGURA SEGUNDOS
+second = 0
+SetData(second, "Local HMI", RW_A, 1006, 1)
+SetData(second, "Local HMI", RW_A, 1010, 1)
+SetData(second, "Local HMI", RW_A, 1046, 1)
+SetData(second, "Local HMI", RW_A, 1050, 1)
+SetData(second, "Local HMI", RW_A, 1086, 1)
+SetData(second, "Local HMI", RW_A, 1090, 1)
+//CONFIGURA TIPO DE FUNCIONAMNETO
+action_mode = 1
+SetData(action_mode, "Local HMI", RW_A, 1002, 1)
+SetData(action_mode, "Local HMI", RW_A, 1042, 1)
+SetData(action_mode, "Local HMI", RW_A, 1082, 1)
+//ATIVA TURNO
+control = 1
+SetData(control, "Local HMI", RW_A, 1000, 1)
+SetData(control, "Local HMI", RW_A, 1040, 1)
+SetData(control, "Local HMI", RW_A, 1080, 1)
+DELAY(1000)
+control = 0
+SetData(control, "Local HMI", RW_A, 1000, 1)
+SetData(control, "Local HMI", RW_A, 1040, 1)
+SetData(control, "Local HMI", RW_A, 1080, 1)
+
+end macro_command

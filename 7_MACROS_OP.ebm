@@ -1,0 +1,226 @@
+﻿macro_definition_begin
+    "id": "7"
+    "name": "MACROS_OP"
+    "startup": "false"
+    "periodic": [ "true", "10" ]
+    "interlock": [ "false" ]
+macro_definition_end
+macro_command main()
+
+short index_n_maq = 0
+short index_variavel = 0
+short index_name = 0
+short nome_maq[5] = {0,0,0,0,0}
+short habilita_op = 0
+short status_op = 0
+short n_op[6] = {0,0,0,0,0,0}
+float qtd = 0
+float tolerancia = 0
+float pecas_p_ciclo = 0
+float ciclos_p_minuto = 0
+short sqlquery_busca_op = 0
+short sqlquery_carrega_op = 0
+short sqlquery_conclui_op = 0
+short aguarda_comando = 0
+bool data_transfer = false
+bool pausa_rede = false
+short busca_op = 0 
+short carrega_op = 0 
+short conclui_op = 0
+float desconto_cunho = 0
+float qtd_produzidas = 0
+float qtd_refugadas = 0
+float cpm_automatico = 0
+short n_gaveta = 0 
+
+
+for index_n_maq = 0 to 31
+
+	index_variavel = (index_n_maq * 500)
+	index_name = (index_n_maq * 5)
+	
+	busca_op = 0
+	SetData(busca_op, "Local HMI", LW, 170, 1)
+	status_op = 0
+	SetData(status_op, "Local HMI", LW, 171, 1)
+	habilita_op = 0
+	SetData(habilita_op, "Local HMI", LW, 172, 1)
+	FILL(n_op[0], 0, 6)
+	SetData(n_op[0], "Local HMI", LW, 173, 6)
+	qtd = 0
+	SetData(qtd, "Local HMI", LW, 179, 1)
+	tolerancia = 0
+	SetData(tolerancia, "Local HMI", LW, 181, 1)
+	pecas_p_ciclo = 0
+	SetData(pecas_p_ciclo, "Local HMI", LW, 183, 1)
+	ciclos_p_minuto = 0
+	SetData(ciclos_p_minuto, "Local HMI", LW, 185, 1)
+	FILL(n_op[0], 0, 6)
+	SetData(n_op[0], "Local HMI", LW, 200, 6)
+	FILL(nome_maq[0], 0, 5)
+	SetData(nome_maq[0], "Local HMI", LW, 206, 5)
+	carrega_op = 0
+	SetData(carrega_op, "Local HMI", LW, 211, 1)
+	n_gaveta = 0
+	SetData(n_gaveta, "Local HMI", LW, 212, 1)	
+	FILL(nome_maq[0], 0, 5)
+	SetData(nome_maq[0], "Local HMI", LW, 240, 5)
+	desconto_cunho = 0
+	SetData(desconto_cunho, "Local HMI", LW, 245, 1)			
+	qtd_produzidas = 0
+	SetData(qtd_produzidas, "Local HMI", LW, 247, 1)	
+	qtd_refugadas = 0
+	SetData(qtd_refugadas, "Local HMI", LW, 249, 1)
+	cpm_automatico = 0
+	SetData(cpm_automatico, "Local HMI", LW, 251, 1)
+	conclui_op = 0
+	SetData(conclui_op, "Local HMI", LW, 253, 1)
+	FILL(n_op[0], 0, 6)
+	SetData(n_op[0], "Local HMI", LW, 254, 6)
+	aguarda_comando = 0
+	
+	GetData(busca_op, "Local HMI", RW, index_variavel + 30106, 1)
+	GetData(carrega_op, "Local HMI", RW, index_variavel + 30123, 1)
+	GetData(conclui_op, "Local HMI", RW, index_variavel + 30154, 1)
+	
+	if busca_op == 1 then	
+		GetData(n_op[0], "Local HMI", RW, index_variavel + 30109, 6)
+		pausa_rede = true
+		SetData(pausa_rede, "Local HMI", LB, index_n_maq, 1)
+		SetData(n_op[0], "Local HMI", LW, 173, 6)
+		DELAY(200)
+		sqlquery_busca_op = 1
+		SetData(sqlquery_busca_op, "Local HMI", LW, 100, 1)
+		while aguarda_comando < 10000
+			GetData(sqlquery_busca_op, "Local HMI", LW, 100, 1)
+			GetData(status_op, "Local HMI", LW, 171, 1)
+			if sqlquery_busca_op == 1 then		
+				DELAY(1)
+				aguarda_comando = aguarda_comando + 1
+			else if sqlquery_busca_op == 0 and  status_op == 2 then
+				aguarda_comando = 10000	
+				data_transfer = true
+				SetData(data_transfer, "Local HMI", LB, index_n_maq + 100, 1)	
+				DELAY(1000)
+				data_transfer = false
+				SetData(data_transfer, "Local HMI", LB, index_n_maq + 100, 1)
+			else if sqlquery_busca_op == 0 and status_op == 0 then
+				aguarda_comando = 10000
+				busca_op = 0
+				SetData(busca_op, "Local HMI", LW, 170, 1)
+				status_op = 3
+				SetData(status_op, "Local HMI", LW, 171, 1)			
+				habilita_op = 0
+				SetData(habilita_op, "Local HMI", LW, 172, 1)
+				FILL(n_op[0], 0, 6)
+				SetData(n_op[0], "Local HMI", LW, 173, 6)	
+				qtd = 0
+				SetData(qtd, "Local HMI", LW, 179, 1)
+				tolerancia = 0
+				SetData(tolerancia, "Local HMI", LW, 181, 1)
+				pecas_p_ciclo = 0
+				SetData(pecas_p_ciclo, "Local HMI", LW, 183, 1)
+				ciclos_p_minuto = 0
+				SetData(ciclos_p_minuto, "Local HMI", LW, 185, 1)	
+				DELAY(100)
+				data_transfer = true
+				SetData(data_transfer, "Local HMI", LB, index_n_maq + 100, 1)
+				DELAY(1000)
+				data_transfer = false
+				SetData(data_transfer, "Local HMI", LB, index_n_maq + 100, 1)
+			end if 	
+		wend
+			
+	else if carrega_op == 1 then
+		GetData(n_op[0], "Local HMI", RW, index_variavel + 30124, 6)		
+		GetData(nome_maq[0], "Local HMI", RW_A, index_name + 2000, 5)
+		pausa_rede = true
+		SetData(pausa_rede, "Local HMI", LB, index_n_maq, 1)
+		SetData(n_op[0], "Local HMI", LW, 200, 6)
+		SetData(nome_maq[0], "Local HMI", LW, 206, 5)
+		n_gaveta = 0
+		SetData(n_gaveta, "Local HMI", LW, 212, 1)
+		DELAY(200)		
+		sqlquery_carrega_op = 2
+		SetData(sqlquery_carrega_op, "Local HMI", LW, 100, 1)
+		aguarda_comando = 0	
+		while aguarda_comando < 10000
+			GetData(sqlquery_carrega_op, "Local HMI", LW, 100, 1)
+			if sqlquery_carrega_op == 2 then		
+				DELAY(1)
+				aguarda_comando = aguarda_comando + 1
+			else if sqlquery_carrega_op == 0 then
+				aguarda_comando = 10000	
+				carrega_op = 0
+				SetData(carrega_op, "Local HMI", LW, 211, 1)
+				SetData(carrega_op, "Local HMI", RW, index_variavel + 30123, 1)
+				data_transfer = true
+				SetData(data_transfer, "Local HMI", LB, index_n_maq + 200, 1)	
+				DELAY(1000)
+				data_transfer = false
+				SetData(data_transfer, "Local HMI", LB, index_n_maq + 200, 1)
+			end if 	
+		wend	
+		
+	else if conclui_op == 1 then
+		GetData(nome_maq[0], "Local HMI", RW_A, index_name + 2000, 5)
+		GetData(n_op[0], "Local HMI", RW, index_variavel + 30155, 6)
+		GetData(desconto_cunho, "Local HMI", RW, index_variavel + 30175, 1)
+		GetData(qtd_produzidas, "Local HMI", RW, index_variavel + 30179, 1)
+		GetData(qtd_refugadas, "Local HMI", RW, index_variavel + 30181, 1)
+		GetData(cpm_automatico, "Local HMI", RW, index_variavel + 30173, 1)
+		pausa_rede = true
+		SetData(pausa_rede, "Local HMI", LB, index_n_maq, 1)
+		SetData(nome_maq[0], "Local HMI", LW, 240, 5)
+		SetData(desconto_cunho, "Local HMI", LW, 245, 1)
+		SetData(qtd_produzidas, "Local HMI", LW, 247, 1)
+		SetData(qtd_refugadas, "Local HMI", LW, 249, 1)
+		SetData(cpm_automatico, "Local HMI", LW, 251, 1)
+		SetData(n_op[0], "Local HMI", LW, 254, 6)
+		n_gaveta = 0
+		SetData(n_gaveta, "Local HMI", LW, 212, 1)
+		DELAY(200)
+		sqlquery_conclui_op = 3
+		SetData(sqlquery_conclui_op, "Local HMI", LW, 100, 1)
+		aguarda_comando = 0		
+		while aguarda_comando < 10000
+			GetData(sqlquery_conclui_op, "Local HMI", LW, 100, 1)	
+			if sqlquery_conclui_op == 3 then		
+				DELAY(1)
+				aguarda_comando = aguarda_comando + 1			
+			else if sqlquery_conclui_op == 0 then
+				aguarda_comando = 10000		
+				conclui_op = 0
+				SetData(conclui_op, "Local HMI", LW, 253, 1)
+				SetData(conclui_op, "Local HMI", RW, index_variavel + 30154, 1)	
+				data_transfer = true
+				SetData(data_transfer, "Local HMI", LB, index_n_maq + 300, 1)	
+				DELAY(1000)
+				data_transfer = false
+				SetData(data_transfer, "Local HMI", LB, index_n_maq + 300, 1)
+			end if 
+		wend
+
+	end if 
+
+busca_op = 0
+SetData(busca_op, "Local HMI", LW, 170, 1)
+SetData(busca_op, "Local HMI", RW, index_variavel + 30106, 1)
+carrega_op = 0
+SetData(carrega_op, "Local HMI", LW, 211, 1)
+SetData(carrega_op, "Local HMI", RW, index_variavel + 30123, 1)
+conclui_op = 0
+SetData(conclui_op, "Local HMI", LW, 253, 1)
+SetData(conclui_op, "Local HMI", RW, index_variavel + 30154, 1)	
+pausa_rede = false
+SetData(pausa_rede, "Local HMI", LB, index_n_maq, 1)
+data_transfer = false
+SetData(data_transfer, "Local HMI", LB, index_n_maq + 100, 1)
+SetData(data_transfer, "Local HMI", LB, index_n_maq + 200, 1)
+SetData(data_transfer, "Local HMI", LB, index_n_maq + 300, 1)
+aguarda_comando = 0
+	
+next
+
+
+end macro_command
